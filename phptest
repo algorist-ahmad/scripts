@@ -1,0 +1,27 @@
+#!/usr/bin/php
+
+<?php
+
+# This is a `task` decorator.
+
+// configs ************************************************************************************
+const DOMAIN="HOME";
+// ********************************************************************************************
+
+# Define an associative array to store option descriptions
+$array = [
+    'A' => 'One',
+    'B' => 'Two',
+    'C' => 'Three',
+];
+
+function main() {
+
+echo 'hello welcome '.DOMAIN.PHP_EOL;
+
+}
+
+main();
+//phpinfo();
+
+?>
