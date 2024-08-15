@@ -56,7 +56,7 @@ main() {
 arch_fzf() {
     output=$(find "$archives_path" -type f -o -type d | fzf)
     es="$?"
-    echo "📋 $style1$output$reset"ac
+    echo "📋 $style1$output$reset"
     echo "$output" | xclip -selection clipboard
     exit $es
 }
