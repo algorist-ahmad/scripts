@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Dependencies:
+# - ARCHIVES env variable
+
+# TODO: Add config
+# TODO: Add to config: archives location (where is it? fetch by file or by env name?)
+
 # Define an associative array to store option descriptions
 declare -A option_descriptions=(
     [" "]="Conduct fuzzy search of archives using fzf"
@@ -14,10 +20,6 @@ declare -A option_descriptions=(
     ['<pattern>']="Searches for pattern in tree"
 )
 
-# config
-archives_path="$HOME/archives"
-path=$archives_path
-
 # TESTS:
 # no arg: passed
 # help: passed
@@ -29,12 +31,14 @@ path=$archives_path
 # launch: pass
 
 main() {
-    #warning "This is a warning"
+    if [ -z "$ARCHIVES" ]; then warn 'Define $ARCHIVES first.'; exit 1; fi
+    if [ ! -d "$ARCHIVES" ]; then warn "Cannot locate $ARCHIVES"; exit 2; fi
     
     if [ $# -eq 0 ]; then arch_fzf; fi
 
     case "$1" in
         ~d | d*bug ) open_this_file ;;
+        config ) echo "Not implemented." ;;
         -h | *help ) show_help ;;
         -c | bash  ) shift ; execute_command "$@" ;;
         -g | git   ) shift ; execute_git "$@" ;;
@@ -54,7 +58,7 @@ main() {
 }
 
 arch_fzf() {
-    output=$(find "$archives_path" -type f -o -type d | fzf)
+    output=$(find "$ARCHIVES" -type f -o -type d | fzf)
     es="$?"
     echo "📋 $style1$output$reset"
     echo "$output" | xclip -selection clipboard
@@ -62,7 +66,7 @@ arch_fzf() {
 }
 
 arch_tree() {
-    tree "$archives_path"
+    tree "$ARCHIVES"
     exit "$?"
 }
 
@@ -70,12 +74,12 @@ execute_command() {
     warn "Not tested"
     if [[ "$1" == '-c' ]]; then shift ; fi
     # Change directory to ~/arch and execute the provided shell commands
-    (cd "$path" && eval "$@")
+    (cd "$ARCHIVES" && eval "$@")
     exit $?
 }
 
 execute_git(){
-	git -C "$path" "$@"
+	git -C "$ARCHIVES" "$@"
 	exit "$?"
 }
 
@@ -149,9 +153,9 @@ open_this_file() {
 }
 
 push_to_github() {
-    git -C "$path" add .
-    git -C "$path" commit -m "sent from $NAME"
-    git -C "$path" push
+    git -C "$ARCHIVES" add .
+    git -C "$ARCHIVES" commit -m "sent from $NAME"
+    git -C "$ARCHIVES" push
     exit "$?"
 }
 
@@ -172,6 +176,6 @@ show_help() {
     exit 0
 }
 
-warn() { echo -e "\e[33m$@\e[0m"; }
+warn() { echo -e "\e[1;33m$@\e[0m"; }
 
 main "$@"
