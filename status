@@ -1,18 +1,30 @@
 #!/bin/bash
 
-echo -e "The following is an example of behaviour only:"
-echo -e "SYSTEM: $SYSTEM"
-echo -e "CONTEXT: $CONTEXT"
-echo -e "CONNECTED TO: $DATABASE"
-echo -e "ASSIGNMENTS: overdue"
-echo -e "BILLS: overdue"
-echo -e "TASKS: overdue"
-echo -e "REPOSITORIES: REMOTE OUTDATED"
+# Path to the file containing repository paths
+REPOS_FILE="$HOME/repositories.txt"
 
 yellow="\e[93m"
 _0="\e[0m"
 separator="********************************************************************************"
 checkmark="✅"
+
+main() {
+	if [[ ! -f "$REPOS_FILE" ]]; then echo "$REPOS_FILE not found. Create one."; exit 1; fi
+    
+    while IFS='=' read -r key value; do
+        # Skip empty lines or lines that don't contain '='
+        [ -z "$key" ] || [ -z "$value" ] && continue
+
+        # Remove leading and trailing whitespace from key and value
+        key=$(echo "$key" | xargs)
+        value=$(echo "$value" | xargs)
+
+        if [[ ! -d "${HOME}${value}" ]]; then echo "${HOME}${value} does not exists"; continue; fi
+
+        check_git_status "${HOME}${value}" "$key"
+  
+    done < "$REPOS_FILE"
+}
 
 # Function to check if the output is empty and perform 'git status' accordingly
 function check_git_status() {
@@ -36,10 +48,4 @@ function check_git_status() {
     fi
 }
 
-check_git_status "$HOME/archives" "ARCHIVES"
-check_git_status "$HOME/bills" "BILLS"
-check_git_status "$HOME/bin" "SCRIPTS"
-check_git_status "$HOME/journal" "JOURNAL"
-check_git_status "$HOME/.password-store" "SECRETS"
-check_git_status "$HOME/rc-files" "RC-FILES"
-check_git_status "$HOME/tasks" "TASKS"
+main
