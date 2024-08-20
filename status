@@ -22,7 +22,7 @@ main() {
 
         if [[ ! -d "${HOME}${value}" ]]; then echo "${HOME}${value} does not exists"; continue; fi
 
-        check_git_status "${HOME}${value}" "$key"
+        check_git_status "${HOME}${value}" "$key" "$1"
   
     done < "$REPOS_FILE"
 }
@@ -31,6 +31,7 @@ main() {
 function check_git_status() {
     local repo_dir="$1"
     local repo_name="$2"
+    local verbose="$3"
     local status_output=$(git -C "$repo_dir" status -s)
     
     if [[ -z "$status_output" ]]; then
@@ -42,12 +43,16 @@ function check_git_status() {
         else
             printf "%-8s: %s\n" "$2" "$cross"
             # echo -e "${yellow}$repo_name $separator${_0}"
-            # git -C "$1" status
+            if [[ $verbose == '-v' ]]; then
+                git -C "$repo_dir" status -s
+            fi
         fi
     else
         printf "%-8s: %s\n" "$2" "$cross"
-        git -C "$repo_dir" status -s
+        if [[ $verbose == '-v' ]]; then
+            git -C "$repo_dir" status -s
+        fi
     fi
 }
 
-main
+main "$1"
