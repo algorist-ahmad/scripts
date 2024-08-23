@@ -3,10 +3,10 @@
 # This is a `task` decorator.
 
 # configs ************************************************************************************
-DOMAIN="$HOME/tasks"
+DOMAIN="$DATA_SOURCE/tasks"
 DEBUG="$DOMAIN/.debug"
 DEBUG=0  # save settings in json
-CONFIG="$DOMAIN/.taskrc"
+CONFIG="$HOME/config/.taskrc"
 TASK_LIMIT=20
 # ********************************************************************************************
 
