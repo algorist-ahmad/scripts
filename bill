@@ -1,6 +1,6 @@
 #!/bin/bash
 
-target="$HOME/bills"
+target="$HOME/src/bills"
 
 # Define an associative array to store option descriptions
 declare -A option_descriptions=(
@@ -31,7 +31,7 @@ main() {
 # Now add functions here in alphabetical order **********************************************
 
 execute_and_push() {
-    task rc:"$HOME"/.billrc "$@"
+    task rc:"$HOME"/src/.billrc "$@"
     case "$1" in
         ad*|mod*|edit|done|undo|del*) push_to_github "$@" ;;
         start|stop|done) no_arg_fn ;;
