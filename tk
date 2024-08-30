@@ -22,6 +22,9 @@ declare -A option_descriptions=(
 )
 
 main() {
+
+	clear -x
+
     # main options
     case "$1" in
         "") list_active_tasks ;;

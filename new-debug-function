@@ -1,8 +1,0 @@
-debug_this_script() {
-    if [[ -n "$1" ]]
-        then editor="$1"
-        else editor="micro"
-    fi
-    "$editor" "$0"
-    exit "$?"
-}

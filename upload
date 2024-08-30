@@ -3,11 +3,17 @@
 DATA_HOME="$HOME/data"
 GIT="git -C $DATA_HOME"
 
-echo -e "***STATUS***"
-$GIT status --short
+main() {
+	clear -x
 
-echo -e "***COMMIT***" 
-$GIT commit --all --message "committed via $HOSTNAMEs$0" --verbose
+	echo -e "***STATUS***"
+	$GIT status --short
+	
+	echo -e "***COMMIT***" 
+	$GIT commit --all --message "committed via $HOSTNAME$0" --verbose
+	
+	echo -e "***PUSH***" 
+	$GIT push --verbose
+}
 
-echo -e "***PUSH***" 
-$GIT push --verbose
+main "$@"
