@@ -7,7 +7,7 @@ DOMAIN="$DATA_SOURCE/tasks"
 DEBUG="$DOMAIN/.debug"
 DEBUG=0  # save settings in json
 CONFIG="$HOME/config/.taskrc"
-TASK_LIMIT=20
+TASK_LIMIT=10
 # ********************************************************************************************
 
 # Define an associative array to store option descriptions
@@ -27,7 +27,7 @@ main() {
 
     # main options
     case "$1" in
-        "") list_active_tasks ;;
+        "") list_tasks ;;
         config) shift ; edit_taskrc "$@" ;;
         debug)  shift ; edit_code "$@" ;;
         help)   print_help ;;
@@ -86,15 +86,12 @@ execute_and_push() {
     esac
 }
 
-list_active_tasks() {
+list_tasks() {
     out=$(task active 2>&1)
+    task limit:$TASK_LIMIT
+    exit "$?"
     if [[ "$out" == *"No matches."* ]]; then
         warn "No active tasks currently"
-        task limit:$TASK_LIMIT
-        exit "$?"
-    else
-        task active
-        exit "$?"
     fi
 }
 
