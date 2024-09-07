@@ -81,9 +81,11 @@ execute_and_push() {
     task "$@"
     case "$1" in
         ad*|mod*|edit|done|undo|del*) push_to_github "$@" ;;
-        start|stop|done) list_active_tasks ;;
-        *) exit "$?";;
     esac
+    case "$2" in
+    	start|stop|done) list_tasks ;;
+    esac
+    exit "$?"
 }
 
 list_tasks() {
