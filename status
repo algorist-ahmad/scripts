@@ -41,16 +41,16 @@ function check_git_status() {
         local status_output=$(git -C "$1" status)
         if [[ $status_output == *"Your branch is up to date"* ]]; then
             # echo -e "$yellow$2: $checkmark$_0"
-            printf "%-8s: %s\n" "$2" "$checkmark"
+            printf "%-12s: %s\n" "$2" "$checkmark"
         else
-            printf "%-8s: %s\n" "$2" "$cross"
+            printf "%-12s: %s\n" "$2" "$cross"
             # echo -e "${yellow}$repo_name $separator${_0}"
             if [[ $verbose == '-v' ]]; then
                 git -C "$repo_dir" status -s
             fi
         fi
     else
-        printf "%-8s: %s\n" "$2" "$cross"
+        printf "%-12s: %s\n" "$2" "$cross"
         if [[ $verbose == '-v' ]]; then
             git -C "$repo_dir" status -s
         fi
