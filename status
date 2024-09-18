@@ -3,7 +3,7 @@
 # Path to the file containing repository paths
 REPOS_FILE="$HOME/repositories.txt"
 
-green"\e[33m"
+green="\e[33m"
 yellow="\e[93m"
 _0="\e[0m"
 separator="********************************************************************************"
