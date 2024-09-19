@@ -19,6 +19,7 @@ for ((i=0; i<${#emojis[@]}; i++)); do
     if (( (i + 1) % 3 == 0 )); then
         echo
     fi
+    sleep 0.01 # for dramatic effect
 done
 
 # Final newline for cleaner output
