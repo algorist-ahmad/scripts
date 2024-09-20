@@ -8,11 +8,12 @@ _0="\e[0m"
 separator="********************************************************************************"
 checkmark="✅"
 cross="❌"
+ahead_behind="🔄"
 
 main() {
-	if [[ ! -f "$REPOS_FILE" ]]; then echo "$REPOS_FILE not found. Create one."; exit 1; fi
+    if [[ ! -f "$REPOS_FILE" ]]; then echo "$REPOS_FILE not found. Create one."; exit 1; fi
     
-	clear -x
+    clear -x
 
     while IFS='=' read -r key value; do
         # Skip empty lines or lines that don't contain '='
@@ -34,23 +35,22 @@ function check_git_status() {
     local repo_dir="$1"
     local repo_name="$2"
     local verbose="$3"
-    local status_output=$(git -C "$repo_dir" status -s)
     
-    if [[ -z "$status_output" ]]; then
-        # If the output is empty, then do 'git status'
-        local status_output=$(git -C "$1" status)
-        if [[ $status_output == *"Your branch is up to date"* ]]; then
-            # echo -e "$yellow$2: $checkmark$_0"
-            printf "%-12s: %s\n" "$2" "$checkmark"
-        else
-            printf "%-12s: %s\n" "$2" "$cross"
-            # echo -e "${yellow}$repo_name $separator${_0}"
-            if [[ $verbose == '-v' ]]; then
-                git -C "$repo_dir" status -s
-            fi
-        fi
+    # Fetch the latest updates from the remote
+    git -C "$repo_dir" fetch > /dev/null 2>&1
+    
+    local status_output=$(git -C "$repo_dir" status -s)
+    local ahead_behind_output=$(git -C "$repo_dir" status -sb | grep -E 'ahead|behind')
+
+    if [[ -z "$status_output" && -z "$ahead_behind_output" ]]; then
+        # Repo is clean and up to date
+        printf "%-12s: %s\n" "$repo_name" "$checkmark"
     else
-        printf "%-12s: %s\n" "$2" "$cross"
+        # Repo is either ahead/behind or has uncommitted changes
+        printf "%-12s: %s\n" "$repo_name" "$cross"
+        if [[ -n "$ahead_behind_output" ]]; then
+            printf "  %-10s: %s\n" "Outdated" "$ahead_behind"
+        fi
         if [[ $verbose == '-v' ]]; then
             git -C "$repo_dir" status -s
         fi
