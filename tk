@@ -7,7 +7,8 @@ DOMAIN="$DATA_SOURCE/tasks"
 DEBUG="$DOMAIN/.debug"
 DEBUG=0  # save settings in json
 CONFIG="$HOME/config/.taskrc"
-TASK_LIMIT=10
+TASK_LIMIT=12
+EXPORT_FILE="$DOMAIN/tasks.json"
 # ********************************************************************************************
 
 # Define an associative array to store option descriptions
@@ -28,6 +29,7 @@ main() {
     # main options
     case "$1" in
         "") list_tasks ;;
+        dump)   shift ; dump_tasks ;;
         config) shift ; edit_taskrc "$@" ;;
         debug)  shift ; edit_code "$@" ;;
         help)   print_help ;;
@@ -86,6 +88,13 @@ execute_and_push() {
     	start|stop|done) list_tasks ;;
     esac
     exit "$?"
+}
+
+dump_tasks() {
+	task export > "$EXPORT_FILE"
+	attempt="$?"
+	echo -e "dumped tasks to $EXPORT_FILE"
+	exit "$attempt"
 }
 
 list_tasks() {
