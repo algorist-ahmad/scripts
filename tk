@@ -65,7 +65,7 @@ main() {
     # catch-all
     case "$found" in
     	0) execute_normally "$@" ;;
-        1) echo -e "\nintercepted by $(which tk)" ;;
+        1) ;;
     esac
 
 	if [[ $AUTO_COMMIT -eq 1 ]]; then
@@ -114,15 +114,11 @@ execute_git() {
 
 execute_normally() {
     task "$@"
-    exit "$?"
+    #exit "$?"
 }
 
 execute_exceptionally() {
-	echo 'exceptional execute'
-	clear -x
 	task "$@"
-	status="$?"
-	commit "$@"
 	list_tasks
 }
 
