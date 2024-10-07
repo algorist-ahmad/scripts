@@ -3,6 +3,7 @@
 # This is a `task` decorator.
 
 # configs ************************************************************************************
+AUTO_COMMIT=1
 DOMAIN="$DATA_SOURCE/tasks"
 DEBUG="$DOMAIN/.debug"
 DEBUG=0  # save settings in json
@@ -24,34 +25,55 @@ declare -A option_descriptions=(
 
 main() {
 
-	clear -x
+	found=0
+	commit_msg=''
 
-    # main options
+	# possible orders
+	#	tk <id> start
+	#   tk start <id>
+
+    # COMMAND FIRST
     case "$1" in
-        "") list_tasks ;;
-        dump)   shift ; dump_tasks ;;
-        config) shift ; edit_taskrc "$@" ;;
-        debug)  shift ; edit_code "$@" ;;
-        help)   print_help ;;
-        open)   shift ; open_associated_file ; exit 1 ;;
-        sync)   synchronize ;;
-        push)   push_to_github "Sent from $HOSTNAME" ;;
-        git | -g) shift ; execute_git "$@" ;;
-        add) shift; add_task "$@" ;;
-        +) shift; add_task_interactively ;;
-        # mod) shift; mod_task_interactively "@" ;; # doesn't work
+        '')     found=1 ; list_tasks ;;
+        dump)   found=1 ; dump_tasks ;;
+        help)   found=1 ; print_help ;;
+        open)   found=1 ; open_associated_file ; exit 1 ;;
+        sync)   found=1 ; synchronize ;;
+        push)   found=1 ; push_to_github "Sent from $HOSTNAME" ;;
+        todo)   found=1 ; list_scheduled_today ;;
+        config) found=1 ; shift ; edit_taskrc "$@" ;;
+        debug)  found=1 ; shift ; edit_code "$@" ;;
+        git)    found=1 ; shift ; execute_git "$@" ;;
+        add)    found=1 ; shift ; add_task "$@" ; commit_msg="$@" ;;
+        +)      found=1 ; shift ; add_task_interactively ; commit_msg="added task interactively" ;;
     esac
 
-    # shortcuts
+	# SINGLE-ID FIRST
     case "$1" in
-        courses) show_courses ;;
-        todo) list_scheduled_today ;;
+    	annot* | denot* | del* | done | edit |\
+    	mod | purge | start | stop | undo)\
+    	found=1 ; commit_msg="$@" ; execute_exceptionally "$@" ;;
+    esac
+
+    # SINGLE-ID FIRST
+    case "$2" in
+    	annot* | denot* | del* | done | edit |\
+    	mod | purge | start | stop | undo)\
+    	found=1 ; commit_msg="$@" ; execute_exceptionally "$@" ;;
     esac
 
     # catch-all
-    case "$1" in
-        *) execute_and_push "$@" ;;
+    case "$found" in
+    	0) execute_normally "$@" ;;
+        1) echo -e "\nintercepted by $(which tk)" ;;
     esac
+
+	if [[ $AUTO_COMMIT -eq 1 ]]; then
+		case "$commit_msg" in
+		    '') echo -e 'no commit\n' ;;
+		    *) commit "$commit_msg" ;;
+		esac
+	fi
 }
 
 # Now add functions here in alphabetical order **********************************************
@@ -59,14 +81,25 @@ main() {
 add_task() {
     if [[ -z "$@" ]]; then add_task_interactively; fi
     task add "$@"
-    exit "$?"
+    status="$?"
+    commit "added $@"
+    exit "$status"
 }
 
 add_task_interactively() {
     warn "DESCRIPTION +tag proj:   pri:   recur:   sch:   due:   dir:   file:   "
     task=$(cat)
     task add $task
-    exit "$?"
+    status="$?"
+    commit "added $task"
+    exit "$status"
+}
+
+commit() {
+	GIT="git -C $DATA_SOURCE"
+	$GIT add tasks*
+	$GIT commit -m "$*"
+	status="$?"
 }
 
 edit_taskrc() {
@@ -79,15 +112,18 @@ execute_git() {
     exit "$?"
 }
 
-execute_and_push() {
+execute_normally() {
     task "$@"
-    case "$1" in
-        ad*|mod*|edit|done|undo|del*) push_to_github "$@" ;;
-    esac
-    case "$2" in
-    	start|stop|done) list_tasks ;;
-    esac
     exit "$?"
+}
+
+execute_exceptionally() {
+	echo 'exceptional execute'
+	clear -x
+	task "$@"
+	status="$?"
+	commit "$@"
+	list_tasks
 }
 
 dump_tasks() {
@@ -98,12 +134,13 @@ dump_tasks() {
 }
 
 list_tasks() {
+	clear -x
     out=$(task active 2>&1)
     task limit:$TASK_LIMIT
-    exit "$?"
-    if [[ "$out" == *"No matches."* ]]; then
-        warn "No active tasks currently"
-    fi
+    #exit "$?"
+    #if [[ "$out" == *"No matches."* ]]; then
+    #    warn "No active tasks currently"
+    #fi
 }
 
 list_scheduled_today() {
@@ -181,10 +218,6 @@ push_to_github() {
     git -C $target commit -m "'$*'" > /dev/null
     git -C $target push
     exit "$?"
-}
-
-show_courses() {
-    tk next +course
 }
 
 synchronize() {
