@@ -34,7 +34,7 @@ main() {
 
     # COMMAND FIRST
     case "$1" in
-        '')     found=1 ; list_tasks ;;
+        '')     found=1 ; clear -x ; list_tasks ;;
         dump)   found=1 ; dump_tasks ;;
         help)   found=1 ; print_help ;;
         open)   found=1 ; open_associated_file ; exit 1 ;;
@@ -118,6 +118,7 @@ execute_normally() {
 }
 
 execute_exceptionally() {
+	clear -x
 	task "$@"
 	list_tasks
 }
@@ -130,7 +131,6 @@ dump_tasks() {
 }
 
 list_tasks() {
-	clear -x
     out=$(task active 2>&1)
     task limit:$TASK_LIMIT
     #exit "$?"
