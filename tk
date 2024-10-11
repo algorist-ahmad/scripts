@@ -9,7 +9,9 @@ DEBUG="$DOMAIN/.debug"
 DEBUG=0  # save settings in json
 CONFIG="$HOME/config/.taskrc"
 TASK_LIMIT=12
-EXPORT_FILE="$DOMAIN/tasks.json"
+DB_FILE="$DOMAIN/taskchampion.sqlite3"
+EXPORT_FILE_JSON="$DOMAIN/tasks.json"
+EXPORT_FILE="$DOMAIN/taskchampion.dump"
 # ********************************************************************************************
 
 # Define an associative array to store option descriptions
@@ -124,7 +126,8 @@ execute_exceptionally() {
 }
 
 dump_tasks() {
-	task export > "$EXPORT_FILE"
+	#task export > "$EXPORT_FILE_JSON" #json
+	sqlite3 "$DB_FILE" '.dump' > "$EXPORT_FILE"
 	attempt="$?"
 	echo -e "dumped tasks to $EXPORT_FILE"
 	exit "$attempt"
