@@ -14,6 +14,7 @@ main() {
     if [[ ! -f "$REPOS_FILE" ]]; then echo "$REPOS_FILE not found. Create one."; exit 1; fi
     
     clear -x
+    echo -e "Fetching..."
 
     while IFS='=' read -r key value; do
         # Skip empty lines or lines that don't contain '='
