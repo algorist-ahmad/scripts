@@ -89,7 +89,7 @@ add_task() {
 }
 
 add_task_interactively() {
-    warn "DESCRIPTION +tag proj:   pri:   recur:   sch:   due:   dir:   file:   "
+    warn "description,sch,wait,due,tags,pri,recur,proj"
     task=$(txtin)
     task add $task
     status="$?"
