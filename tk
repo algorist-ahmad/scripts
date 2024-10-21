@@ -90,7 +90,7 @@ add_task() {
 
 add_task_interactively() {
     warn "DESCRIPTION +tag proj:   pri:   recur:   sch:   due:   dir:   file:   "
-    task=$(cat)
+    task=$(txtin)
     task add $task
     status="$?"
     commit "added $task"
