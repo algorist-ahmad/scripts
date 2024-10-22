@@ -9,6 +9,7 @@ DEBUG="$DOMAIN/.debug"
 DEBUG=0  # save settings in json
 CONFIG="$HOME/config/.taskrc"
 TASK_LIMIT=7 # 7 fits Aran's screen
+TASK_WAIT_DURATION="2hours"
 DB_FILE="$DOMAIN/taskchampion.sqlite3"
 EXPORT_FILE_JSON="$DOMAIN/tasks.json"
 EXPORT_FILE="$DOMAIN/taskchampion.dump"
@@ -47,6 +48,7 @@ main() {
         debug)  found=1 ; shift ; edit_code "$@" ;;
         git)    found=1 ; shift ; execute_git "$@" ;;
         add)    found=1 ; shift ; add_task "$@" ; commit_msg="$@" ;;
+        hide)   found=1 ; shift ; hide_tasks "$@" ;;
         +)      found=1 ; shift ; add_task_interactively ; commit_msg="added task interactively" ;;
     esac
 
@@ -133,10 +135,27 @@ dump_tasks() {
 	exit "$attempt"
 }
 
+hide_tasks() {
+    task "$@" mod wait:$TASK_WAIT_DURATION
+    warn "Tasks hidden for $TASK_WAIT_DURATION"
+}
+
 list_tasks() {
 	list_tasks_active
 	list_tasks_scheduled
 	list_tasks_other
+}
+
+list_tasks_active() {
+    # if there are active tasks, display first
+    task active
+}
+
+list_tasks_scheduled() {
+    task scheduled:today or +todo or +TODO
+}
+
+list_tasks_other() {
     out=$(task active 2>&1)
     task limit:$TASK_LIMIT
     #exit "$?"
@@ -145,9 +164,9 @@ list_tasks() {
     #fi
 }
 
+# deprecated
 list_scheduled_today() {
-    task scheduled:today or +todo or +TODO or +next
-    exit "$?"
+    list_tasks_scheduled
 }
 
 mod_task_interactively() {
