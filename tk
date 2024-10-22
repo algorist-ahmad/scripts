@@ -134,6 +134,9 @@ dump_tasks() {
 }
 
 list_tasks() {
+	list_tasks_active
+	list_tasks_scheduled
+	list_tasks_other
     out=$(task active 2>&1)
     task limit:$TASK_LIMIT
     #exit "$?"
