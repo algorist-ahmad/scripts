@@ -1,5 +1,7 @@
 #!/bin/bash
 
+EMOJI_DEFAULT="DEFAULT VALUE"
+
 # Array of emojis and symbols to test
 emojis=(
     "😀" "😃" "😄" "😅" "😆" "😂" "🤣" "😊" "😇" "😍"
@@ -24,5 +26,11 @@ done
 
 # Final newline for cleaner output
 echo
+echo "-----------------------------------------"
+
+#emoji=$([[ -n "$EMOJI" ]] && echo "$EMOJI" || echo "$EMOJI_DEFAULT")
+emoji=${EMOJI:-$EMOJI_DEFAULT}
+echo "EMOJI VALUE: $emoji"
+
 echo "-----------------------------------------"
 echo "Testing complete!"
