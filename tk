@@ -98,8 +98,8 @@ add_task_interactively() {
 }
 
 commit() {
-	GIT="git -C $DATA_SOURCE"
-	$GIT add tasks*
+	GIT="git -C $TASKDATA"
+	$GIT add .
 	$GIT commit -m "$*"
 	status="$?"
 }
