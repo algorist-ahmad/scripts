@@ -26,13 +26,14 @@ declare -A option_descriptions=(
 # dev: passed
 # edit: fail
 # tree: passed
-# warp: fail
+# warp: passed
 # execute: fail
 # launch: pass
 
 main() {
+	ARCHIVES="$FILEKEEPER_DIR"
     if [ -z "$ARCHIVES" ]; then warn 'Define $ARCHIVES first.'; exit 1; fi
-    if [ ! -d "$ARCHIVES" ]; then warn "Cannot locate $ARCHIVES"; exit 2; fi
+    if [ ! -d "$ARCHIVES" ]; then warn "Cannot locate $ARCHIVES"; return 2; fi
     
     if [ $# -eq 0 ]; then arch_fzf; fi
 
@@ -45,7 +46,7 @@ main() {
         -l | ls    ) list ;;
         -s | sync  ) push_to_github ;;
         -t | tree  ) arch_tree ;;
-        -w | warp  ) cd_to_directory ;;
+        -w | warp | cd) warn "sourcing scripts is bad. Use interactive subshell instead (arch>)" ; cd "$FILEKEEPER_DIR" ;;
         # bash shortcuts
         echo | mkdir | touch | rmdir | rm | bat | cat | yq | md | jq) execute_command "$@" ;;
         # git shortcuts
@@ -53,8 +54,8 @@ main() {
         *) launch_search "$@" ;;
     esac
 
-    echo -e "\e[31mERROR\e[0m" >&2
-    exit 1
+    # echo -e "\e[31mERROR\e[0m" >&2
+    return "$?"
 }
 
 arch_fzf() {
@@ -62,12 +63,12 @@ arch_fzf() {
     es="$?"
     echo "📋 $style1$output$reset"
     echo "$output" | xclip -selection clipboard
-    exit $es
+    return $es
 }
 
 arch_tree() {
     tree "$ARCHIVES"
-    exit "$?"
+    return "$?"
 }
 
 execute_command() {
@@ -75,12 +76,12 @@ execute_command() {
     if [[ "$1" == '-c' ]]; then shift ; fi
     # Change directory to ~/arch and execute the provided shell commands
     (cd "$ARCHIVES" && eval "$@")
-    exit $?
+    return $?
 }
 
 execute_git(){
 	git -C "$ARCHIVES" "$@"
-	exit "$?"
+	return "$?"
 }
 
 # Help function to display usage information and option descriptions
@@ -95,7 +96,6 @@ help() {
     for option in "${!option_descriptions[@]}"; do
         printf "  ${GREEN}%-12s${NC} %s\n" "$option" "${option_descriptions[$option]}"
     done
-    exit 0
 }
 
 launch_search() {
@@ -115,10 +115,10 @@ launch_search() {
     # Check if the output contains any directories or files
     if [[ $output == *"0 directories, 0 files"* ]]; then
         warn "No match."
-        exit 0
+        return 0
     else
         echo "$output"
-        exit 0
+        return 0
     fi
 }
 
@@ -126,7 +126,7 @@ list() {
     cd $path
     pwd
     ls
-    exit 0
+    return 0
 }
 
 open_chosen_file() {
@@ -140,23 +140,23 @@ open_chosen_file() {
         for file in $files; do
             $EDITOR "$file"
         done
-        exit $?
+        return $?
     else
         echo -e "\e[31mNo matching files found.\e[0m"
-        exit 1
+        return 1
     fi
 }
 
 open_this_file() {
     micro $0
-    exit "$?"
+    return "$?"
 }
 
 push_to_github() {
     git -C "$ARCHIVES" add .
     git -C "$ARCHIVES" commit -m "sent from $NAME"
     git -C "$ARCHIVES" push
-    exit "$?"
+    return "$?"
 }
 
 show_help() {
@@ -173,7 +173,7 @@ show_help() {
     # git shortcuts
     diff | status | add | commit | push | pull ) execute_git "$@" ;;
     *) launch_search "$@" ;;"
-    exit 0
+    # return 0
 }
 
 warn() { echo -e "\e[1;33m$@\e[0m"; }
