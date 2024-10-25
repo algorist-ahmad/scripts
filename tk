@@ -4,15 +4,13 @@
 
 # configs ************************************************************************************
 AUTO_COMMIT=1
-DOMAIN="$DATA_SOURCE/tasks"
-DEBUG="$DOMAIN/.debug"
+DEBUG="$LOGS/task.debug"
 DEBUG=0  # save settings in json
-CONFIG="$HOME/config/.taskrc"
-TASK_LIMIT=7 # 7 fits Aran's screen
-TASK_WAIT_DURATION="2hours"
-DB_FILE="$DOMAIN/taskchampion.sqlite3"
-EXPORT_FILE_JSON="$DOMAIN/tasks.json"
-EXPORT_FILE="$DOMAIN/taskchampion.dump"
+TASKCHAMPION="$TASKDATA/taskchampion.sqlite3"
+EXPORT_FILE_JSON="$TASKDATA/tasks.json"
+EXPORT_FILE="$TASKDATA/taskchampion.dump"
+#TASK_LIMIT= defined in shell env
+#TASK_WAIT_DURATION= defined in shell env
 # ********************************************************************************************
 
 # Define an associative array to store option descriptions
@@ -107,7 +105,7 @@ commit() {
 }
 
 edit_taskrc() {
-    "$EDITOR" "$CONFIG"
+    "$EDITOR" "$TASKRC"
     exit 0
 }
 
@@ -129,7 +127,7 @@ execute_exceptionally() {
 
 dump_tasks() {
 	#task export > "$EXPORT_FILE_JSON" #json
-	sqlite3 "$DB_FILE" '.dump' > "$EXPORT_FILE"
+	sqlite3 "$TASKCHAMPION" '.dump' > "$EXPORT_FILE"
 	attempt="$?"
 	echo -e "dumped tasks to $EXPORT_FILE"
 	exit "$attempt"
