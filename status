@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Path to the file containing repository paths
-REPOS_FILE="$HOME/repositories.txt"
+REPOS_FILE="$STATUS_REPO_LIST"
 
 yellow="\e[93m"
 _0="\e[0m"
