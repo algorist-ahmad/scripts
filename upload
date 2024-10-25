@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DATA_HOME="$HOME/data"
+DATA_HOME="$NEXUS"
 GIT="git -C $DATA_HOME"
 
 main() {
