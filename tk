@@ -89,7 +89,7 @@ add_task() {
 }
 
 add_task_interactively() {
-    warn "description,sch,wait,due,tags,pri,recur,proj"
+    warn "+{git,admin,coin,appointment,...} desc,sch,wait,due,pri,recur,proj"
     task=$(txtin)
     task add $task
     status="$?"
