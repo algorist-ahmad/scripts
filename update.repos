@@ -1,0 +1,15 @@
+#!/bin/bash
+
+separate() { echo "=================================================" ;  }
+
+git -C "$NEXUS"  pul 5
+separate
+git -C "$CONFIG" pul 5
+separate
+git -C "$HOME/scripts" pul 5
+separate
+git -C "$NEXUS/pass" pul 5
+separate
+git -C "$HOME/src/jrnl-wrapper" pul 5
+separate
+git -C "$HOME/src/coinmaster" pul 5
