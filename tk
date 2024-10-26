@@ -89,7 +89,8 @@ add_task() {
 }
 
 add_task_interactively() {
-    warn "+{git,admin,coin,appointment,...} desc,sch,wait,due,pri,recur,proj"
+    warn "Attributes: desc, sch, wait, due, pri, recur, proj, loc, jrnl"
+    warn "Use tags: admin, auto, coin, git, next, rv, vita, work, etc."
     task=$(txtin)
     task add $task
     status="$?"
@@ -146,11 +147,11 @@ list_tasks() {
 
 list_tasks_active() {
     # if there are active tasks, display first
-    task active
+    task active 2>/dev/null
 }
 
 list_tasks_scheduled() {
-    task scheduled:today or +todo or +TODO
+    task scheduled:today or +todo or +TODO 2>/dev/null
 }
 
 list_tasks_other() {
