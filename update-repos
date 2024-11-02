@@ -1,15 +1,20 @@
 #!/bin/bash
 
-separate() { echo "=================================================" ;  }
+separate() { echo "================================================= $*" ;  }
 
+separate NEXUS
 git -C "$NEXUS"  pul 5
-separate
+separate dotfiles
 git -C "$CONFIG" pul 5
-separate
+separate archives
+git -C "$HOME/archives" pul 3
+separate scripts
 git -C "$HOME/scripts" pul 5
+separate pass
+git -C "$NEXUS/pass" pul 2
+separate coin
+git -C "$HOME/src/coinmaster" pul 2
+separate jrnl
+git -C "$HOME/src/jrnl-wrapper" pul 2
 separate
-git -C "$NEXUS/pass" pul 5
-separate
-git -C "$HOME/src/jrnl-wrapper" pul 5
-separate
-git -C "$HOME/src/coinmaster" pul 5
+
