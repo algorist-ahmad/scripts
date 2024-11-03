@@ -38,6 +38,7 @@ main() {
     if [ $# -eq 0 ]; then arch_fzf; fi
 
     case "$1" in
+    	ss) launch_arch_subshell ;;
         ~d | d*bug ) open_this_file ;;
         config ) echo "Not implemented." ;;
         -h | *help ) show_help ;;
