@@ -1,10 +1,10 @@
 #!/bin/bash
 
-DATA_HOME="$NEXUS"
-GIT="git -C $DATA_HOME"
+[[ -z "$NEXUS" ]] && echo 'NEXUS not defined' && exit 1
+[[ ! -d "$NEXUS" ]] && echo "$NEXUS ain't a git folder" && exit 2
+GIT="git -C $NEXUS"
 
 main() {
-	clear -x
 
 	echo -e "***STATUS***"
 	$GIT status --short
