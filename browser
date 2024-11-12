@@ -1,0 +1,34 @@
+#!/bin/bash
+
+ESTIMATED_LOAD_TIME=1.19
+WINDOW_OFFSET_X=0   # horizontal position
+WINDOW_OFFSET_Y=280 # vertical position
+WINDOW_WIDTH=750
+WINDOW_HEIGHT=500
+
+# Check if the BROWSER variable is set
+if [[ -z "$BROWSER" ]]; then
+    echo 'variable $BROWSER is not set'
+    exit 1
+fi
+
+# Save piped HTML content to a temporary file
+echo "$*" > /tmp/.html
+
+case "$BROWSER" in
+	firefox) options='--new-window' ;;
+	*) options='' ;;
+esac
+
+# Open the HTML in the browser
+$BROWSER $options /tmp/.html &
+
+# Wait briefly to give the browser time to open
+sleep $ESTIMATED_LOAD_TIME
+
+# Use xdotool to resize and move the window
+WINDOW_ID=$(xdotool search --onlyvisible --class "$BROWSER" | head -n 1)
+if [[ -n "$WINDOW_ID" ]]; then
+    xdotool windowmove "$WINDOW_ID" $WINDOW_OFFSET_X $WINDOW_OFFSET_Y # Adjust Y-value based on screen resolution
+    xdotool windowsize "$WINDOW_ID" $WINDOW_WIDTH $WINDOW_HEIGHT      # Set the desired width and height
+fi
