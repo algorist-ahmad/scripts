@@ -8,8 +8,8 @@ separate dotfiles
 git -C "$CONFIG" pul 5
 separate archives
 git -C "$HOME/archives" pul 3
-separate scripts
-git -C "$HOME/scripts" pul 5
+separate bin
+git -C "$HOME/bin" pul 5
 separate pass
 git -C "$NEXUS/pass" pul 2
 separate coin
