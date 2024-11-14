@@ -31,6 +31,6 @@ echo "-----------------------------------------"
 #emoji=$([[ -n "$EMOJI" ]] && echo "$EMOJI" || echo "$EMOJI_DEFAULT")
 emoji=${EMOJI:-$EMOJI_DEFAULT}
 echo "EMOJI VALUE: $emoji"
-echo "EMAIL ACCESS TOKEN: $EMAIL_TOKEN"
+echo "EMAIL ACCESS TOKEN: $EMAIL_PASSWORD"
 echo "-----------------------------------------"
 echo "Testing complete!"
