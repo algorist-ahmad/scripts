@@ -3,5 +3,5 @@
 
 while true; do
     echo -e "check email"
-    sleep 5400  # 5400 seconds = 90 minutes
+    sleep 10000  # 5400 seconds = 90 minutes
 done
