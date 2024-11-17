@@ -1,1 +1,1 @@
-/home/ahmad/src/jrnl-wrapper/journal.sh
+/home/ahmad/src/journal/journal.sh
