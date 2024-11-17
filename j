@@ -1,0 +1,1 @@
+/home/ahmad/src/jrnl-wrapper/journal.sh
