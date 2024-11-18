@@ -15,6 +15,6 @@ git -C "$NEXUS/pass" pul 2
 separate coin
 git -C "$HOME/src/coinmaster" pul 2
 separate jrnl
-git -C "$HOME/src/jrnl-wrapper" pul 2
+git -C "$HOME/src/journal" pul 2
 separate
 
