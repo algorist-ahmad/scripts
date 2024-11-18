@@ -1,3 +1,21 @@
+# Scripts
+
+## Recently added
+
+| script | description                            |      usage     | dependencies | modified   | description |
+|:------:|----------------------------------------|:--------------:|:------------:|------------|-------------|
+|  see  | Opens stdin content in the default app | `cat pdf \| see` | xdg-open     | 2024-11-17 | 2024-11-17  |
+|        |                                        |                |              |            |             |
+|        |                                        |                |              |            |             |
+|        |                                        |                |              |            |             |
+|        |                                        |                |              |            |             |
+|        |                                        |                |              |            |             |
+|        |                                        |                |              |            |             |
+|        |                                        |                |              |            |             |
+|        |                                        |                |              |            |             |
+
+## ?
+
 All files here are executable save for this one.
 This means from anywhere in bash, entering the name of the file executes the file itself.
 Here's how to do this:
