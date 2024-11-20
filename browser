@@ -46,14 +46,14 @@ done
 $BROWSER $options /tmp/.html &
 
 # Wait briefly to give the browser time to open
-sleep $ESTIMATED_LOAD_TIME
+#sleep $ESTIMATED_LOAD_TIME
 
 # Use xdotool to resize and move the window
-WINDOW_ID=$(xdotool search --onlyvisible --class "$BROWSER" | head -n 1)
-if [[ -n "$WINDOW_ID" ]]; then
-    xdotool windowmove "$WINDOW_ID" $WINDOW_OFFSET_X $WINDOW_OFFSET_Y # Adjust Y-value based on screen resolution
-    xdotool windowsize "$WINDOW_ID" $WINDOW_WIDTH $WINDOW_HEIGHT      # Set the desired width and height
-fi
+#WINDOW_ID=$(xdotool search --onlyvisible --class "$BROWSER" | head -n 1)
+#if [[ -n "$WINDOW_ID" ]]; then
+    #xdotool windowmove "$WINDOW_ID" $WINDOW_OFFSET_X $WINDOW_OFFSET_Y # Adjust Y-value based on screen resolution
+    #xdotool windowsize "$WINDOW_ID" $WINDOW_WIDTH $WINDOW_HEIGHT      # Set the desired width and height
+#fi
 
 # debug mode
 
