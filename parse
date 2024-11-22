@@ -1,159 +1,93 @@
 #!/bin/bash
 
-# DEFINE ENVIRONMENT
+# Template parser, useful as example too
 
-# DEFINE FILES
+# source ./variables
 
-# DEFINE PARSED ARGS
+declare -A DEFAULT=(
+    [cache]="$HOME/.cache"
+    [log_file]="$HOME/logfile.log"
+)
 
-# default variables, manually add to reveal_variables()
+declare -A FILE_PATH=(
+    [config_file]="$HOME/.config/my_script/config.yml"
+    [log_dir]="$HOME/logs/"
+)
 
-CACHE="$HOME/.cache" # default cache location where cached data is stored
-DEBUG=0              # reveals environment variables if true
-EDIT=0
-DELETE=0
-HOME_DIR=''          # this script's parent directory
-INPUT_ARGS="$@"      # arguments received by main script
-PARSED_ARGS=''       # arguments parsed
-LOG=''               # where stderr go defined in .env
-JRNL=''              # the true jrnl command wrapped by this one defined in .env
-OK=1                 # if everything is OK, continue execution of arguments
-WRITE_MODE='off'
-WRITE_MODE_INDICATOR_FILE="$CACHE/jrnl/write.mode.bool"
-AMEND=0
+declare -A FLAG=(
+    [error]=0
+)
 
-log() { echo "$@" >> "$LOG"; };
+declare -A NAMESPACE=(
+    [args]="$@"
+    [debug]=0
+    [create]=0
+    [update]=0
+    [delete]=0
+    [A]=''
+    [B]=''
+    [C]=''
+)
 
-function main() {
-    verify_program_integrity # makes sure .env is present among other things
-    source_env
-    prepare_true_command
-    check_write_mode
-    # parse_args $INPUT_ARGS
-    [[ "$1" == "debug" ]] && shift && reveal_variables 
-    [[ $OK -eq 1 ]] && route_args "$@"
+#########################################################
+
+main() {
+    dissect "$@"
+    terminate_if_no_arg
+    reveal_variables
 }
 
-# TODO: route to programs instead and also move data to private and this code to public
-route_args() {
+dissect() {
 
-    log "jrnl-main: ARGS = $@"
-
-    # Put non-terminating case first
-    # --printenv ) 
-    #         shift; printenv=1 ;;
-
-    # terminating cases
-    case "$1" in
-        # NO ARGUMENT
-
-        '') show_today_jrnl ;;
-
-        # SPECIAL COMMANDS
-
-        -\?) 
-            print_info ;; # such as context, number of todos, consumed status, etc...
-        --)
-            shift; bypass_wrapper "$@";; # go directly to the true jrnl program
-        --amend | -a | amend)
-            export AMEND=1 ;
-            export WRITE_MODE='on' ;
-            shift ; amend ;;
-        --date  | -d | dat*) 
-            shift; view_journal_on_date "$@" ;;
-        --template | -T | temp*) 
-            load_template "$2" ;;
-        --todo | -t)
-            edit_today_todo "$@" ;;
-        --undo | -u | und*)
-            shift; execute_true_jrnl --delete -1 ;;
-        --write | -w | wri*) 
-            shift; "$HOME_DIR/jrnl-write.sh" "$@" ; exit "$?" ;;
-        --no-editor | -wn | -nw )
-            shift; "$HOME_DIR/jrnl-write.sh" "-n" ; exit "$?" ;;
-        src  | -D) 
-            shift; debug_code "$@" ;;
-        git    | -g) 
-            shift; execute_git "$@" ;;
-        conf*  | -C) 
-            shift; config_jrnl "$@" ;;
-        cont*  | -c) 
-            shift; context "$@" ; exit "$?";;
-        push   | -p) 
-            shift; push_to_remote ;;
-        view   | ?d) 
-            view_entries_in_terminal "$@" ;;
-        yest*)
-            view_journal_yesterday "$@" ;;
-
-        # Cases where $1 begins with '-' or '@', pass directly to jrnl without processing
-        -* | @*) $JRNL $@ ;;
-
-        # If no case matched above, then treat it as a filter by default
-        *) filter_journal "$@"
-
-    esac
-}
-
-verify_program_integrity() {
-    export HOME_DIR="$(dirname "$(readlink -f "$0")")"
-    export env="$HOME_DIR/.env"
-    # env not exist
-    if [[ ! -f "$env" ]]; then echo "NO $env FOUND. Create one in $HOME_DIR"; exit 1; fi
-}
-
-source_env() {
-    tmp=$HOME_DIR
-    # Load config variables
-    source "$HOME_DIR/.env"
-    # verify contents, issue warning if needed
-    if [[ "$HOME_DIR" != "$tmp" ]]; then echo "Warning: HOME_DIR [$HOME_DIR] not matching actual parent ($tmp)"; fi
-    # does LOG exists?
-    if [[ ! -f "$LOG" ]]; then
-        echo "$LOG DOES NOT EXIST IN $tmp/.env. Will send output to $tmp/jrnl.log instead."
-        export LOG="$tmp/jrnl.log"
-    fi
-}
-
-parse_args() {
-    EDIT=0
-    DELETE=0
-    ON=0
-    FUCK=0
-    SHIT=0
-    last_opt=''
-
-    for arg in $@; do
-        echo "$arg"
-        sleep 0.1
-    done
-
+    LAST_OPTION=''
+    
     # Iterate over arguments using a while loop
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            --edit)
-                export EDIT=1
-                last_opt='--edit'
-                shift  # Move to next argument
+            create)
+                NAMESPACE[create]=1 ;
+                LAST_OPTION='create' ;
+                shift ;  # Move to next argument
                 ;;
-            delete)
-                export DELETE=1
-                last_opt='delete'
-                shift
+            A)
+                NAMESPACE[A]=1 ;
+                LAST_OPTION='A' ;
+                shift ;
                 ;;
-            on)
-                export ON=1
-                shift
+            B)
+                NAMESPACE[B]=1 ;
+                LAST_OPTION='B' ;
+                shift ;
+                ;;
+            C)
+                NAMESPACE[C]=1 ;
+                LAST_OPTION='C' ;
+                shift ;
                 ;;
             *)
                 # Handle unknown argument
-                echo "$last_opt: $1"
-                shift
+                if [[ -z "$LAST_OPTION" ]]; then
+                    echo "unknown: $1"
+                else
+                    NAMESPACE["$LAST_OPTION"]="${NAMESPACE[$LAST_OPTION]} $1"
+                fi
+                shift ;
                 ;;
         esac
     done
-
-    echo "EDIT=$EDIT"
-    echo "DELETE=$DELETE"
-    echo "ON=$ON"
 }
+
+terminate_if_no_arg() {
+    [[ "${NAMESPACE[args]}" == "" ]] && echo 'No args received.' && exit 0
+}
+
+reveal_variables() {
+    # if NAMESPACE[debug] -eq 1
+    # for KEY,VALUE in NAMESPACE
+    # PRINT
+    echo "A: ${NAMESPACE[A]}"
+    echo "B: ${NAMESPACE[B]}"
+    echo "C: ${NAMESPACE[C]}"
+}
+
+main "$@"
