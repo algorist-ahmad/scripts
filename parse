@@ -31,10 +31,13 @@ declare -A NAMESPACE=(
 
 #########################################################
 
+# try not to mess with this structure, make other functions subfunctions of these below
 main() {
-    dissect "$@"
-    terminate_if_no_arg
-    reveal_variables
+    initialize   # setup environment and check for missing files
+    dissect "$@" # break input for analysis
+    validate     # validate the operation
+    dispatch     # execute the operation
+    terminate    # execute post-script tasks regardless of operation
 }
 
 dissect() {
@@ -44,25 +47,20 @@ dissect() {
     # Iterate over arguments using a while loop
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            create)
-                NAMESPACE[create]=1 ;
-                LAST_OPTION='create' ;
-                shift ;  # Move to next argument
+            debug)
+                NAMESPACE[debug]=1 ;
                 ;;
             A)
                 NAMESPACE[A]=1 ;
                 LAST_OPTION='A' ;
-                shift ;
                 ;;
             B)
                 NAMESPACE[B]=1 ;
                 LAST_OPTION='B' ;
-                shift ;
                 ;;
             C)
                 NAMESPACE[C]=1 ;
                 LAST_OPTION='C' ;
-                shift ;
                 ;;
             *)
                 # Handle unknown argument
@@ -71,9 +69,10 @@ dissect() {
                 else
                     NAMESPACE["$LAST_OPTION"]="${NAMESPACE[$LAST_OPTION]} $1"
                 fi
-                shift ;
                 ;;
         esac
+        # discard argument
+        shift
     done
 }
 
@@ -82,12 +81,12 @@ terminate_if_no_arg() {
 }
 
 reveal_variables() {
-    # if NAMESPACE[debug] -eq 1
-    # for KEY,VALUE in NAMESPACE
-    # PRINT
-    echo "A: ${NAMESPACE[A]}"
-    echo "B: ${NAMESPACE[B]}"
-    echo "C: ${NAMESPACE[C]}"
+    if [[ NAMESPACE['debug'] -eq 1 ]]; then
+        # Loop through the keys of the associative array and print key-value pairs
+        for key in "${!NAMESPACE[@]}"; do
+            echo "Key: $key, Value: ${NAMESPACE[$key]}"
+        done
+    fi
 }
 
 main "$@"
