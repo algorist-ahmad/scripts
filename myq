@@ -8,4 +8,6 @@ QUERY="$@"
   >&2 echo "File: $YAML_FILE"
 # >&2 echo "Query: $QUERY"
 
+[[ "$1" == "-n" ]] && cat "$YAML_FILE" | yq '... comments=""' && exit $?
+
 cat "$YAML_FILE" | yq "$QUERY"
