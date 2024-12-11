@@ -42,11 +42,20 @@ run-japp() {
   TASKRC="${ENV[config]}"
   TASKDATA="${ENV[data]}"
 
-  if [[ "$1" == 'add' ]]; then
-    operation='add'
-  else
-    operation='jobapps'
-  fi
+  DEFAULT_REPORT='jobapps' # name of the special report
+
+  case "$1" in
+    '')
+      operation=$DEFAULT_REPORT ;;
+    add)
+      operation='add' ;;
+    mod* | modify)
+      operation='modify' ;;
+    del* | delete)
+      operation='delete' ;;
+    --)
+      operation='' ;; # turn off report to enable all commands
+  esac
   
   task $operation "$@"
 }
