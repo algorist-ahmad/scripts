@@ -1,6 +1,6 @@
 #!/bin/bash
 
-separate() { echo "================================================= $*" ;  }
+separate() { echo "==================================================================================================== $*" ;  }
 
 separate NEXUS
 git -C "$NEXUS"  pul 5
@@ -16,5 +16,5 @@ separate coin
 git -C "$HOME/src/coinmaster" pul 2
 separate jrnl
 git -C "$HOME/src/journal" pul 2
-separate
-
+separate vita
+git -C "$HOME/src/vita" pul 2
