@@ -72,7 +72,7 @@ main() {
 
 	if [[ $AUTO_COMMIT -eq 1 ]]; then
 		case "$commit_msg" in
-		    '') echo -e 'no commit\n' ;;
+		    '') >&2 echo -e 'no commit\n' ;;
 		    *) commit "$commit_msg" ;;
 		esac
 	fi
