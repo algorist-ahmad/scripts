@@ -1,0 +1,5 @@
+#!/bin/bash
+
+file=$(mktemp --suffix .jpeg)
+cat > $file
+xdg-open "$file" 2> /tmp/xdg-open.log &
