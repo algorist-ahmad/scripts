@@ -41,7 +41,6 @@ main() {
         open)   found=1 ; open_associated_file ; exit 1 ;;
         sync)   found=1 ; synchronize ;;
         push)   found=1 ; push_to_github "Sent from $HOSTNAME" ;;
-        todo)   found=1 ; list_scheduled_today ;;
         config) found=1 ; shift ; edit_taskrc "$@" ;;
         debug)  found=1 ; shift ; edit_code "$@" ;;
         git)    found=1 ; shift ; execute_git "$@" ;;
@@ -148,10 +147,6 @@ list_tasks() {
 list_tasks_active() {
     # if there are active tasks, display first
     task active 2>/dev/null
-}
-
-list_tasks_scheduled() {
-    task scheduled:today or +todo or +TODO 2>/dev/null
 }
 
 list_tasks_other() {
