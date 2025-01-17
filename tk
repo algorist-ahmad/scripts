@@ -35,7 +35,7 @@ main() {
 
     # COMMAND FIRST
     case "$1" in
-        '')     found=1 ; clear -x ; list_tasks ;;
+        '')     found=1 ; task ; exit 0 ;;
         dump)   found=1 ; dump_tasks ;;
         help)   found=1 ; print_help ;;
         open)   found=1 ; open_associated_file ; exit 1 ;;
@@ -51,8 +51,7 @@ main() {
 
 	# SINGLE-ID FIRST
     case "$1" in
-    	annot* | denot* | del* | done | edit |\
-    	mod | purge | start | stop | undo)\
+    	annot* | denot* | del* | done | edit | mod | purge | start | stop | undo)\
     	found=1 ; commit_msg="$@" ; execute_exceptionally "$@" ;;
     esac
 
@@ -66,15 +65,17 @@ main() {
     # catch-all
     case "$found" in
     	0) execute_normally "$@" ;;
-        1) ;;
+      1) ;;
     esac
+# 
+# 	if [[ $AUTO_COMMIT -eq 1 ]]; then
+# 		case "$commit_msg" in
+# 		    '') >&2 echo -e 'no commit\n' ;;
+# 		    *) commit "$commit_msg" ;;
+# 		esac
+# 	fi
 
-	if [[ $AUTO_COMMIT -eq 1 ]]; then
-		case "$commit_msg" in
-		    '') >&2 echo -e 'no commit\n' ;;
-		    *) commit "$commit_msg" ;;
-		esac
-	fi
+	[[ $AUTO_COMMIT -eq 1 ]] && [[ -n "$commit_msg" ]] && commit "$commit_msg"
 }
 
 # Now add functions here in alphabetical order **********************************************
@@ -140,7 +141,6 @@ hide_tasks() {
 
 list_tasks() {
 	list_tasks_active
-	list_tasks_scheduled
 	list_tasks_other
 }
 
@@ -156,11 +156,6 @@ list_tasks_other() {
     #if [[ "$out" == *"No matches."* ]]; then
     #    warn "No active tasks currently"
     #fi
-}
-
-# deprecated
-list_scheduled_today() {
-    list_tasks_scheduled
 }
 
 mod_task_interactively() {
