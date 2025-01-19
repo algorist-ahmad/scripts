@@ -1,3 +1,3 @@
 #!/bin/bash
 
-echo "need to implement parser first"
+parse "$@"
