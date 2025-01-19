@@ -1,92 +1,76 @@
 #!/bin/bash
 
-# Template parser, useful as example too
-
-# source ./variables
-
-declare -A DEFAULT=(
-    [cache]="$HOME/.cache"
-    [log_file]="$HOME/logfile.log"
-)
-
-declare -A FILE_PATH=(
-    [config_file]="$HOME/.config/my_script/config.yml"
-    [log_dir]="$HOME/logs/"
-)
-
-declare -A FLAG=(
-    [error]=0
-)
-
-declare -A NAMESPACE=(
-    [args]="$@"
-    [debug]=0
-    [create]=0
-    [update]=0
-    [delete]=0
-    [A]=''
-    [B]=''
-    [C]=''
-)
-
-#########################################################
+JSON='{}'
+KEY='unknown'
+VALUES=""
 
 # try not to mess with this structure, make other functions subfunctions of these below
 main() {
-    initialize   # setup environment and check for missing files
-    dissect "$@" # break input for analysis
-    validate     # validate the operation
-    dispatch     # execute the operation
-    terminate    # execute post-script tasks regardless of operation
+    initialize "$@"
+    parse "$@"
+    terminate
 }
 
-dissect() {
+initialize() {
+    # count arguments and add to JSON
+    edit_json args.count $#
+    edit_json args.input "$*"
+    edit_json args.parsed '{}'
+}
 
-    LAST_OPTION=''
-    
-    # Iterate over arguments using a while loop
+parse() {
+    # if start with --, add as key, else add as value, but if literal '--', then set -- = true
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            debug)
-                NAMESPACE[debug]=1 ;
-                ;;
-            A)
-                NAMESPACE[A]=1 ;
-                LAST_OPTION='A' ;
-                ;;
-            B)
-                NAMESPACE[B]=1 ;
-                LAST_OPTION='B' ;
-                ;;
-            C)
-                NAMESPACE[C]=1 ;
-                LAST_OPTION='C' ;
-                ;;
-            *)
-                # Handle unknown argument
-                if [[ -z "$LAST_OPTION" ]]; then
-                    echo "unknown: $1"
-                else
-                    NAMESPACE["$LAST_OPTION"]="${NAMESPACE[$LAST_OPTION]} $1"
-                fi
-                ;;
+            --*) set_key "$1" ;;
+            *) set_value "$1" ;;
         esac
-        # discard argument
         shift
     done
 }
 
-terminate_if_no_arg() {
-    [[ "${NAMESPACE[args]}" == "" ]] && echo 'No args received.' && exit 0
+terminate() {
+    [[ -n "$VALUES" ]] && set_key "done"
+    # output to stdout
+    jq . <<< "$JSON"
 }
 
-reveal_variables() {
-    if [[ NAMESPACE['debug'] -eq 1 ]]; then
-        # Loop through the keys of the associative array and print key-value pairs
-        for key in "${!NAMESPACE[@]}"; do
-            echo "Key: $key, Value: ${NAMESPACE[$key]}"
-        done
-    fi
+edit_json() {
+  local key="$1"
+  local val=$(echo "$2" | xargs)
+
+  # Determine the type of the value
+  if [[ "$val" =~ ^[0-9]+$ ]]; then
+    # Number
+    JSON=$(echo "$JSON" | jq ".$key = $val")
+  elif [[ "$val" =~ ^\[(.*)\]$ ]]; then
+    # Array (must be in JSON format)
+    JSON=$(echo "$JSON" | jq --argjson val "$val" ".$key = \$val"arguments)
+  elif [[ "$val" =~ ^\{(.*)\}$ ]]; then
+    # JSON Object (must be in JSON format)
+    JSON=$(echo "$JSON" | jq --argjson val "$val" ".$key = \$val")
+  elif [[ "$val" == "true" || "$val" == "false" ]]; then
+    # Boolean
+    JSON=$(echo "$JSON" | jq ".$key = $val")
+  elif [[ "$val" == "null" ]]; then
+    # Null
+    JSON=$(echo "$JSON" | jq ".$key = null")
+  else
+    # String (default)
+    JSON=$(echo "$JSON" | jq ".$key = \"$val\"")
+  fi
+}
+
+set_key() {
+    # store cached values to previous key, and replace previous key with this key
+    edit_json "args.parsed.$KEY" "$VALUES"
+    KEY="${1:2}"
+    VALUES= #reset
+}
+
+set_value () {
+    VALUES+=" $1"
+    echo "values is now $VALUES"
 }
 
 main "$@"
