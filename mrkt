@@ -1,1 +1,27 @@
-/home/ahmad/src/mrkt/src/main.sh
+#!/bin/bash
+
+# mrkt --> list items on sale using taskwarrior as backend
+
+TASKRC="$MRKTRC"
+TASKDATA="$MRKTDATA"
+
+# Main entry point
+main() {
+  initialize
+  task "$@"
+}
+
+# Initialize environment
+initialize() {
+  if [[ ! -f "$TASKRC" ]]; then
+      >&2 echo "DEFINE VALID \$MRKTRC"
+      exit 1
+    fi
+  
+    if [[ ! -d "$TASKDATA" ]]; then
+      >&2 echo "DEFINE VALID \$MRKTDATA"
+      exit 1
+    fi
+}
+
+main "$@"
