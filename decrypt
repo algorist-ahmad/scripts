@@ -1,3 +1,34 @@
 #!/bin/bash
 
-parse "$@"
+yel="\e[33m"
+red="\e[31m"
+bold="\e[1m"
+none="\e[0m"
+key="O──┬┬"
+
+main(){
+  for file in $@; do
+    is_exist $file
+    _decrypt $file
+  done
+}
+
+is_exist() {
+  if [[ ! -e "$1" ]]; then
+    >&2 echo "file $1 does not exist"
+    exit 1
+  fi
+}
+
+_decrypt() {
+  # send output to tmpfile
+  tmp_file=$(mktemp -t decrypted.XXXX)
+  gpg --decrypt --quiet "$file" > $tmp_file
+  if [[ $? -eq 0 ]]; then
+    >&2 echo -e "$bold$file $none $yel$key $none $bold$tmp_file $none"
+  else
+    >&2 echo -e "$red$bold""fail""$none"
+  fi
+}
+
+main "$@"
