@@ -7,6 +7,7 @@ none="\e[0m"
 key="O──┬┬"
 
 main(){
+  [[ $# -eq 0 ]] && echo -e "$yel""To decrypt files:$bold decrypt <file>...$none"
   for file in $@; do
     is_exist $file
     _decrypt $file
@@ -15,7 +16,7 @@ main(){
 
 is_exist() {
   if [[ ! -e "$1" ]]; then
-    >&2 echo "file $1 does not exist"
+    >&2 echo -e "$yel""file $1 does not exist$none"
     exit 1
   fi
 }
