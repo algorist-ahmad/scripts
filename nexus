@@ -10,6 +10,7 @@ dir_list='eza --header --all --long --icons --no-permissions --no-user --git --g
 declare -a modules=(
   'task'
   'pass'
+  '.'
 )
 
 main() {
@@ -43,14 +44,10 @@ git_push_nexus() {
   for module in "${modules[@]}"; do
     cd "$NEXUS/$module"
     git add .
-    git commit -m "$COMMIT_MSG"
+    echo -n "$module: "
+    git commit --short -m "$COMMIT_MSG"
     git push
   done
-
-  cd $NEXUS
-  git add .
-  git commit -m "$COMMIT_MSG"
-  git push
 }
 
 _get() {
