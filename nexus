@@ -1,8 +1,8 @@
 #!/bin/bash
 
-JSON=$(parse "$@")
-ARGS='.args.parsed'
-COUNT=$#
+ARGS="$@"
+ARG_COUNT=$#
+DATA= # cache json file for the execution of the program
 COMMIT_MSG="committed via script: nexus"
 
 dir_list='eza --header --all --long --icons --no-permissions --no-user --git --git-repos --total-size --time-style=relative --sort Name --hyperlink'
@@ -10,27 +10,35 @@ dir_list='eza --header --all --long --icons --no-permissions --no-user --git --g
 declare -a modules=(
   'task'
   'pass'
-  '.'
+  '../nexus'
 )
 
 main() {
   init
+  jq '.' $DATA
   execute
   terminate
 }
 
 init() {
-  echo "$JSON" | jq
+  # create data file
+  DATA=$(mktemp --suffix .json)
+  # update data file
+  parse "$ARGS" > $DATA
+  # ...
+  _set_conditional push false
+  _set_conditional pull false
+  # change directry
   cd $NEXUS
 }
 
 execute() {
-  if [[ $COUNT -eq 0 ]]; then
+  if [[ $ARG_COUNT -eq 0 ]]; then
     $dir_list
   elif _true $(_get push); then
     git_push_nexus
   elif _true $(_get pull); then
-    git_push_nexus
+    git_pull_nexus
   else
     echo 'huh?'
   fi
@@ -50,12 +58,32 @@ git_push_nexus() {
   done
 }
 
+git_pull_nexus() {
+  for module in "${modules[@]}"; do
+    cd "$NEXUS/$module"
+    echo -n "$module: "
+    git pull
+  done
+}
+
+_set_conditional() {
+  tmp=$(mktemp)
+  jq "if .args.parsed | has(\"$1\") then . else .args.parsed += {\"$1\": $2} end" "$DATA" > "$tmp"
+  mv "$tmp" "$DATA"
+}
+
+_set() {
+  tmp=$(mktemp)
+  jq ".args.parsed.$1 = $2" $DATA > $tmp
+  mv $tmp $DATA
+}
+
 _get() {
-  echo "$JSON" | jq "$ARGS.$1" -r
+  jq -r ".args.parsed.$1" $DATA
 }
 
 _true() {
   [[ "$1" == 'true' ]]
 }
 
-main
+main "$@"
