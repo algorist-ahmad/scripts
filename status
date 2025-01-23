@@ -17,6 +17,9 @@ main() {
     echo -e "Fetching..."
 
     while IFS='=' read -r key value; do
+        # skip lines which begin with '#'
+        [[ "$key" =~ ^# ]] && continue
+        
         # Skip empty lines or lines that don't contain '='
         [ -z "$key" ] || [ -z "$value" ] && continue
 
