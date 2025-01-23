@@ -51,8 +51,8 @@ terminate() {
 git_push_nexus() {
   for module in "${modules[@]}"; do
     cd "$NEXUS/$module"
-    git add .
     echo -n "$module: "
+    git add .
     git commit --short -m "$COMMIT_MSG"
     git push
   done
