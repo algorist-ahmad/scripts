@@ -1,20 +1,21 @@
 #!/bin/bash
 
 separate() { echo "==================================================================================================== $*" ;  }
+git-pull() { git --no-pager -C "$1" pul $2; }
 
 separate NEXUS
-git -C "$NEXUS"  pul 5
+git-pull "$NEXUS" 5
 separate dotfiles
-git -C "$CONFIG" pul 5
+git-pull "$CONFIG" 5
 separate archives
-git -C "$HOME/archives" pul 3
+git-pull "$HOME/archives" 3
 separate bin
-git -C "$HOME/bin" pul 5
+git-pull "$HOME/bin" 5
 separate pass
-git -C "$NEXUS/pass" pul 2
+git-pull "$NEXUS/pass" 2
 separate coin
-git -C "$HOME/src/coinmaster" pul 2
+git-pull "$HOME/src/coinmaster" 2
 separate jrnl
-git -C "$HOME/src/journal" pul 2
+git-pull "$HOME/src/journal" 2
 separate vita
-git -C "$HOME/src/vita" pul 2
+git-pull "$HOME/src/vita" 2
