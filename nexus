@@ -53,7 +53,7 @@ git_push_nexus() {
     cd "$NEXUS/$module"
     echo -n "$module: "
     git add .
-    git commit --short -m "$COMMIT_MSG"
+    git commit -qm "$COMMIT_MSG" >/dev/null
     git push
   done
 }
