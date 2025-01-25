@@ -4,13 +4,12 @@
 
 # configs ************************************************************************************
 AUTO_COMMIT=1
+CACHE="$XDG_CACHE_HOME/task"
 DEBUG="$LOGS/task.debug"
 DEBUG=0  # save settings in json
 TASKCHAMPION="$TASKDATA/taskchampion.sqlite3"
 EXPORT_FILE_JSON="$TASKDATA/tasks.json"
 EXPORT_FILE="$TASKDATA/taskchampion.dump"
-#TASK_LIMIT= defined in shell env
-#TASK_WAIT_DURATION= defined in shell env
 # ********************************************************************************************
 
 # Define an associative array to store option descriptions
@@ -29,9 +28,8 @@ main() {
 	found=0
 	commit_msg=''
 
-	# possible orders
-	#	tk <id> start
-	#   tk start <id>
+  initialize
+	cache last_cmd "$*"
 
     # COMMAND FIRST
     case "$1" in
@@ -47,6 +45,7 @@ main() {
         add)    found=1 ; shift ; add_task "$@" ; commit_msg="$@" ;;
         hide)   found=1 ; shift ; hide_tasks "$@" ;;
         +)      found=1 ; shift ; add_task_interactively ; commit_msg="added task interactively" ;;
+        /)      found=1 ; shift ; task "$@" ;;
     esac
 
 	# SINGLE-ID FIRST
@@ -98,6 +97,16 @@ add_task_interactively() {
     exit "$status"
 }
 
+cache() {
+  file="$CACHE/.json"
+  yq -i ".$1 = \"$2\"" $file
+}
+
+cache_get() {
+  file="$CACHE/.json"
+  yq ".$1" $file
+}
+
 commit() {
 	GIT="git -C $TASKDATA"
 	$GIT add .
@@ -115,15 +124,18 @@ execute_git() {
     exit "$?"
 }
 
+execute_last_cmd() {
+  task "$(cache_get 'last_cmd')"
+}
+
 execute_normally() {
     task "$@"
     #exit "$?"
 }
 
 execute_exceptionally() {
-	clear -x
 	task "$@"
-	list_tasks
+	# execute_last_cmd
 }
 
 dump_tasks() {
@@ -137,6 +149,12 @@ dump_tasks() {
 hide_tasks() {
     task "$@" mod wait:$TASK_WAIT_DURATION
     warn "Tasks hidden for $TASK_WAIT_DURATION"
+}
+
+initialize() {
+  cachefile="$CACHE/.json"
+  [[ ! -d "$CACHE" ]] && mkdir -pv "$CACHE"
+  [[ ! -e "$cachefile" ]] && echo '{}' > "$cachefile"
 }
 
 list_tasks() {
@@ -228,6 +246,10 @@ push_to_github() {
     git -C $target commit -m "'$*'" > /dev/null
     git -C $target push
     exit "$?"
+}
+
+save_cmd() {
+  tmp=$(mktemp)
 }
 
 synchronize() {
