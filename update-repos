@@ -4,7 +4,7 @@ separate() { echo "=============================================================
 git-pull() { git --no-pager -C "$1" pul $2; }
 
 separate NEXUS
-git-pull "$NEXUS" 5
+nexus --pull
 separate dotfiles
 git-pull "$CONFIG" 5
 separate archives
