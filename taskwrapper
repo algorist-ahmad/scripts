@@ -44,6 +44,7 @@ main() {
         git)    found=1 ; shift ; execute_git "$@" ;;
         add)    found=1 ; shift ; add_task "$@" ; commit_msg="$@" ;;
         hide)   found=1 ; shift ; hide_tasks "$@" ;;
+        postpone) found=1 ; shift; postpone_task "$@" ;;
         +)      found=1 ; shift ; add_task_interactively ; commit_msg="added task interactively" ;;
         /)      found=1 ; shift ; task "$@" ;;
     esac
@@ -99,7 +100,9 @@ add_task_interactively() {
 
 cache() {
   file="$CACHE/.json"
-  yq -i ".$1 = \"$2\"" $file
+  tmp=$(mktemp)
+  # yq -i ".$1 = \"$2\"" $filepostpone_task
+  jq ".$1 = \"$2\"" $file > $tmp && mv $tmp $file
 }
 
 cache_get() {
@@ -187,6 +190,10 @@ mod_task_interactively() {
         modifications=$( cat )
         tk "$@" mod $modifications
     fi
+}
+
+postpone_task() {
+  task $@ modify due:1week
 }
 
 print_help(){
