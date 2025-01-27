@@ -76,6 +76,8 @@ main() {
 # 	fi
 
 	[[ $AUTO_COMMIT -eq 1 ]] && [[ -n "$commit_msg" ]] && commit "$commit_msg"
+
+	terminate
 }
 
 # Now add functions here in alphabetical order **********************************************
@@ -155,9 +157,21 @@ hide_tasks() {
 }
 
 initialize() {
+  create_cache
+}
+
+create_cache() {
   cachefile="$CACHE/.json"
   [[ ! -d "$CACHE" ]] && mkdir -pv "$CACHE"
   [[ ! -e "$cachefile" ]] && echo '{}' > "$cachefile"
+}
+
+set_expiring_tasks() {
+  expiring_task_count=$(task +PENDING until.none: expires.any: count)
+  if [[ $expiring_task_count -gt 0 ]]; then
+    echo 'tasks are set to expire but until not set!'
+    # task +PENDING until.none: expires.any: modify until=expires
+  fi
 }
 
 list_tasks() {
@@ -268,6 +282,10 @@ synchronize() {
     else
         echo "Changes found. Was pull successful\?"
     fi
+}
+
+terminate() {
+  set_expiring_tasks
 }
 
 warn() { echo -e "\e[33m$@\e[0m"; }
