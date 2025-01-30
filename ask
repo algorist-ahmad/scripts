@@ -1,0 +1,6 @@
+#!/bin/bash
+
+
+PROMPT="$*"
+
+ollama run $OLLAMA_MODEL "$PROMPT"
