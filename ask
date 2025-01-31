@@ -3,4 +3,8 @@
 
 PROMPT="$*"
 
+# kitty --hold sh -c 'ollama serve' &
+# sleep 2
 ollama run $OLLAMA_MODEL "$PROMPT"
+
+# FEATURE REQUEST: stop ollama with pkill -f "ollama serve"
