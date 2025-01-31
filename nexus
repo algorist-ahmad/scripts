@@ -24,7 +24,7 @@ init() {
   # create data file
   DATA=$(mktemp --suffix .json)
   # update data file
-  parse "$ARGS" > $DATA
+  parse $ARGS > $DATA
   # ...
   _set_conditional push false
   _set_conditional pull false
@@ -33,15 +33,10 @@ init() {
 }
 
 execute() {
-  if [[ $ARG_COUNT -eq 0 ]]; then
-    $dir_list
-  elif _true $(_get push); then
-    git_push_nexus
-  elif _true $(_get pull); then
-    git_pull_nexus
-  else
-    echo 'huh?'
-  fi
+  [[ $ARG_COUNT -eq 0 ]] &&  $dir_list
+  if _true $(_get push); then git_push_nexus; fi
+  if _true $(_get pull); then git_pull_nexus; fi
+  if ! _null $(_get unknown); then echo "huh? $(_get unknown)?"; fi
 }
 
 terminate() {
@@ -84,6 +79,10 @@ _get() {
 
 _true() {
   [[ "$1" == 'true' ]]
+}
+
+_null() {
+  [[ "$1" == 'null' ]]
 }
 
 main "$@"
