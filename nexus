@@ -15,7 +15,7 @@ declare -a modules=(
 
 main() {
   init
-  jq '.' $DATA
+  jq -c '.' $DATA
   execute
   terminate
 }
