@@ -15,7 +15,8 @@ declare -a modules=(
 
 main() {
   init
-  jq -c '.' $DATA
+  echo -n "parsed: "
+  jq -c '.args.parsed' $DATA
   execute
   terminate
 }
