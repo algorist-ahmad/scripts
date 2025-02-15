@@ -55,8 +55,8 @@ send_as_multipart() {
   
   # Send the email using Curl, changed to --ssl from --ssl-reqd (what is that?)
   curl --show-error \
-       --url "smtps://$SMTP_SERVER:$SMTP_PORT" \
-       --ssl \
+       --url "smtp://$SMTP_SERVER:$SMTP_PORT" \
+       --ssl-reqd \
        --mail-from "$SMTP_USERNAME" \
        --mail-rcpt "$TO" \
        --user "$SMTP_USERNAME:$SMTP_PASSWORD" \
