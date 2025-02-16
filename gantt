@@ -1,0 +1,3 @@
+#!/bin/bash
+
+andrew-ls.gantt --help-example |andrew-ls.gantt
