@@ -69,7 +69,7 @@ default_fn() {
     esac
     
     # Create the symlink and capture stderr
-    ln -siv "$target" "$linkname"
+    sudo ln -siv "$target" "$linkname"
     # exitstat="$?"
     # 
     # # Check exit status and log appropriately
