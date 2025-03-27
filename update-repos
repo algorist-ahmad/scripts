@@ -13,9 +13,9 @@ separate bin
 git-pull "$HOME/bin" 5
 separate pass
 git-pull "$NEXUS/pass" 2
-separate coin
-git-pull "$HOME/src/coinmaster" 2
-separate jrnl
-git-pull "$HOME/src/journal" 2
-separate vita
-git-pull "$HOME/src/vita" 2
+# separate coin
+# git-pull "$HOME/src/coinmaster" 2
+# separate jrnl
+# git-pull "$HOME/src/journal" 2
+# separate vita
+# git-pull "$HOME/src/vita" 2
