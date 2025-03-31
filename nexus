@@ -10,6 +10,7 @@ dir_list='eza --header --all --long --icons --no-permissions --no-user --git --g
 declare -a modules=(
   'task'
   'pass'
+  'cook'
   '../nexus'
 )
 
