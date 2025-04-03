@@ -7,7 +7,7 @@
 # 
 # 1. pacman -S docker-compose
 # 2. mkdir ~/src/lubelogger
-# 3. cd~/src/lubelogger
+# 3. cd ~/src/lubelogger
 # 4. create .env file according to LubeLogger docs
 # 5. copy https://github.com/hargata/lubelog/blob/main/docker-compose.yml
 # 6. sudo systemctl start docker
@@ -15,14 +15,26 @@
 # 8. docker compose up -d
 # 9. firefox localhost:8080
 
+DATA="$AUTOKNIGHT_DIR" # ~/nexus/auto
 BROWSER='firefox'
 BROWSER_OPTS='--new-window'
 PORT=8080
 URL="localhost:$PORT"
+IMAGE_URL="ghcr.io/hargata/lubelogger:latest" # for sudo docker pull <IMAGE_URL>
 
 main(){
-  # may need to start docker first or change directory
+  # run_docker_daemon
+  run_docker-compose
   launch_browser
+}
+
+run_docker_daemon(){
+  sudo systemctl start docker
+}
+
+run_docker-compose(){
+  cd "$DATA"
+  sudo docker compose up -d
 }
 
 launch_browser(){
