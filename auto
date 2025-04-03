@@ -24,21 +24,31 @@ IMAGE_URL="ghcr.io/hargata/lubelogger:latest" # for sudo docker pull <IMAGE_URL>
 
 main(){
   # run_docker_daemon
-  run_docker-compose
-  launch_browser
+  grab_sudo_permission
+  launch_browser &
+  start_container
+}
+
+#FIXME
+grab_sudo_permission(){
+  sudo echo "Permission granted"
 }
 
 run_docker_daemon(){
   sudo systemctl start docker
 }
 
-run_docker-compose(){
+start_container(){
   cd "$DATA"
-  sudo docker compose up -d
+  sudo docker compose up
 }
 
+# FIXME: bad practices
 launch_browser(){
+  sleep 2
   $BROWSER "$BROWSER_OPTS" "$URL"
+  sleep 3
+  wmctrl -r "LubeLogger" -b toggle,maximized_vert,maximized_horz
 }
 
 main
