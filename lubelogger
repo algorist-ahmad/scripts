@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# entry fdc97cf0: Installation instructions for Docker and LubeLogger
+# |
+# 
+# These steps assume Docker is already installed, such is the case with Aran
+# 
+# 1. pacman -S docker-compose
+# 2. mkdir ~/src/lubelogger
+# 3. cd~/src/lubelogger
+# 4. create .env file according to LubeLogger docs
+# 5. copy https://github.com/hargata/lubelog/blob/main/docker-compose.yml
+# 6. sudo systemctl start docker
+# 7. sudo docker pull ghcr.io/hargata/lubelogger:latest
+# 8. docker compose up -d
+# 9. firefox localhost:8080
+
+BROWSER='firefox'
+BROWSER_OPTS='--new-window'
+PORT=8080
+URL="localhost:$PORT"
+
+main(){
+  # may need to start docker first or change directory
+  launch_browser
+}
+
+launch_browser(){
+  $BROWSER "$BROWSER_OPTS" "$URL"
+}
+
+main
