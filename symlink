@@ -2,6 +2,8 @@
 
 # reverses the order of TARGET and LINK_NAME in command `ln`
 
+# TODO: add -sudo option
+
 declare -A option_descriptions=(
     [" "]="What happens if no arg given?"
     ["help"]="Display a help message"
@@ -69,7 +71,7 @@ default_fn() {
     esac
     
     # Create the symlink and capture stderr
-    sudo ln -siv "$target" "$linkname"
+    ln -siv "$target" "$linkname"
     # exitstat="$?"
     # 
     # # Check exit status and log appropriately
