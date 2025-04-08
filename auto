@@ -23,8 +23,8 @@ URL="localhost:$PORT"
 IMAGE_URL="ghcr.io/hargata/lubelogger:latest" # for sudo docker pull <IMAGE_URL>
 
 main(){
-  # run_docker_daemon
-  grab_sudo_permission
+  run_docker_daemon
+  # grab_sudo_permission
   launch_browser &
   start_container
 }
