@@ -35,7 +35,7 @@ display_help() {
     echo
     echo "IMPORTANT WARNING:"
     echo "When using the output variable, make sure to use double-quotes:"
-    echo "  echo \"\$var\""
+    echo "  echo -e \"\$var\""
     echo "because"
     echo "  echo \$var"
     echo "DOES NOT print newlines."
