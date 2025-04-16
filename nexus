@@ -8,6 +8,7 @@ COMMIT_MSG="committed via script: nexus"
 dir_list='eza --header --all --long --icons --no-permissions --no-user --git --git-repos --total-size --time-style=relative --sort Name --hyperlink'
 
 declare -a modules=(
+  'coin'
   'task'
   'pass'
   'cook'
