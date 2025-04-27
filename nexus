@@ -12,7 +12,7 @@ declare -a modules=(
   'task'
   'pass'
   'cook'
-  '../nexus'
+  '../collections'
 )
 
 main() {
