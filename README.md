@@ -2,6 +2,11 @@
 
 ## Recently added
 
+### Best template
+
+Template to follow when creating new scripts
+
+### Scripts and purpose
 | script | description                            |      usage     | dependencies | modified   | description |
 |:------:|----------------------------------------|:--------------:|:------------:|------------|-------------|
 |  see  | Opens stdin content in the default app | `cat pdf \| see` | xdg-open     | 2024-11-17 | 2024-11-17  |
