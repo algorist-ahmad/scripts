@@ -1,0 +1,6 @@
+#!/bin/bash
+
+WEB_URL="https://app.clickup.com"
+ID="/90131736059/v/b/6-901314682812-2"
+
+$BROWSER "$WEB_URL$ID" &
