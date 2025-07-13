@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# get ip oneliner
+ip route get 1.1.1.1 | awk -F"src " 'NR == 1{ split($2, a," ");print a[1]}'
