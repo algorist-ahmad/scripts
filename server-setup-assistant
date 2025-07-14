@@ -1,0 +1,116 @@
+#!/bin/bash
+
+# Check if gum is installed
+if ! command -v gum &> /dev/null; then
+    echo "Please install gum first:"
+    echo "https://github.com/charmbracelet/gum#installation"
+    exit 1
+fi
+
+clear
+gum style --border double --margin "1 2" --padding "1 2" --bold "Server Setup Assistant"
+
+# 1. Who am I?
+gum style --bold "1. USER IDENTITY"
+echo "Check your current user and privileges:"
+echo "  $(gum style --foreground 212 'whoami && id')"
+gum spin --spinner dot --title "Checking..." -- sleep 1
+echo && whoami && id
+gum confirm "Continue?" && clear
+
+# 2. Server Local IP
+gum style --bold "2. SERVER LOCAL IP"
+echo "Find your server's private IP address:"
+echo "  $(gum style --foreground 212 'hostname -i')"
+echo "  $(gum style --foreground 212 'ip -4 addr show | grep inet')"
+gum spin --spinner dot --title "Detecting..." -- sleep 1
+echo && hostname -i
+gum confirm "Continue?" && clear
+
+# 3. Public IP
+gum style --bold "3. ROUTER'S PUBLIC IP"
+echo "Find your public internet IP:"
+echo "  $(gum style --foreground 212 'curl ifconfig.me')"
+echo "  $(gum style --foreground 212 'dig +short myip.opendns.com @resolver1.opendns.com')"
+gum spin --spinner line --title "Contacting DNS..." -- sleep 2
+echo && curl -s ifconfig.me
+gum confirm "Continue?" && clear
+
+# 4. SSH Port
+gum style --bold "4. SSH PORT CONFIGURATION"
+echo "Recommended: Use non-standard port (e.g., 57576)"
+echo "Edit SSH config:"
+echo "  $(gum style --foreground 212 'sudo nano /etc/ssh/sshd_config')"
+echo "Add/change: $(gum style --foreground 212 'Port 57576')"
+gum input --placeholder "Your SSH port (press Enter for 57576)" --value 57576
+gum confirm "Continue?" && clear
+
+# 5. Firewall Status
+gum style --bold "5. FIREWALL STATUS"
+echo "Check active firewall:"
+echo "For firewalld:"
+echo "  $(gum style --foreground 212 'sudo systemctl status firewalld')"
+echo "For ufw:"
+echo "  $(gum style --foreground 212 'sudo ufw status')"
+gum confirm "Continue?" && clear
+
+# 6. Firewall Port Check
+gum style --bold "6. PORT VERIFICATION"
+echo "Check if port is open:"
+echo "firewalld:"
+echo "  $(gum style --foreground 212 'sudo firewall-cmd --list-ports')"
+echo "ufw:"
+echo "  $(gum style --foreground 212 'sudo ufw status')"
+gum confirm "Continue?" && clear
+
+# 7. Router Access
+gum style --bold "7. ROUTER ACCESS"
+echo "Common admin portals:"
+echo "  http://192.168.0.1"
+echo "  http://192.168.1.1"
+echo "  http://10.0.0.1"
+gum input --placeholder "Enter your router's URL"
+gum confirm "Continue?" && clear
+
+# 8. Port Forwarding
+gum style --bold "8. PORT FORWARDING SETUP"
+echo "Required router settings:"
+echo "  - External Port: Your chosen SSH port"
+echo "  - Internal IP: Server's local IP"
+echo "  - Protocol: TCP"
+echo "  - Internal Port: Same as external port"
+gum confirm "Continue?" && clear
+
+# 9. Firewall Setup
+gum style --bold "9. FIREWALL CONFIGURATION"
+echo "To open port:"
+echo "firewalld:"
+echo "  $(gum style --foreground 212 'sudo firewall-cmd --add-port=PORT/tcp --permanent')"
+echo "  $(gum style --foreground 212 'sudo firewall-cmd --reload')"
+echo "ufw:"
+echo "  $(gum style --foreground 212 'sudo ufw allow PORT/tcp')"
+gum confirm "Continue?" && clear
+
+# 10. SSH Keys
+gum style --bold "10. SSH KEY MANAGEMENT"
+echo "Key setup process:"
+echo "1. Generate key pair on client:"
+echo "   $(gum style --foreground 212 'ssh-keygen -t ed25519')"
+echo "2. Copy public key to server:"
+echo "   $(gum style --foreground 212 'ssh-copy-id -p PORT user@SERVER_IP')"
+echo "3. Disable password login in /etc/ssh/sshd_config:"
+echo "   $(gum style --foreground 212 'PasswordAuthentication no')"
+gum confirm "Continue?" && clear
+
+# 11. Security Practices
+gum style --bold "11. SECURITY BEST PRACTICES"
+echo "1. $(gum style --bold --foreground 196 'Non-default SSH port')"
+echo "2. $(gum style --bold --foreground 196 'Disable root login') (PermitRootLogin no)"
+echo "3. $(gum style --bold --foreground 196 'Key-based authentication only')"
+echo "4. $(gum style --bold --foreground 196 'Regular updates'): sudo apt update && sudo apt upgrade"
+echo "5. $(gum style --bold --foreground 196 'Fail2ban') for intrusion prevention"
+echo "6. $(gum style --bold --foreground 196 'Backup configs') regularly"
+
+gum style --bold --margin "1 0" "SETUP COMPLETE!"
+echo "Test connection:"
+echo "  $(gum style --foreground 212 'ssh user@$(curl -s ifconfig.me) -p YOUR_PORT')"
