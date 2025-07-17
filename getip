@@ -7,6 +7,6 @@ ip route get 1.1.1.1 | awk -F"src " 'NR == 1{ split($2, a," ");print a[1]}'
 echo -n "Public: "
 curl ipinfo.io/ip
 
-echo -n "Router:\n192.168.2.1"
+echo -e "Router:\n192.168.2.1"
 
 echo -e "\n"
