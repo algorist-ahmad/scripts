@@ -1,0 +1,7 @@
+#!/bin/bash
+
+FILE="$HOME/devices/*yaml"
+
+>&2 echo "file: $FILE" 
+
+yq . $FILE
