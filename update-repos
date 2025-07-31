@@ -6,13 +6,15 @@ git-pull() { git --no-pager -C "$1" pul $2; }
 separate NEXUS
 nexus --pull
 separate dotfiles
-git-pull "$CONFIG" 5
+git-pull "$CONFIG" 1
 separate archives
-git-pull "$HOME/archives" 3
+git-pull "$HOME/archives" 1
 separate bin
-git-pull "$HOME/bin" 5
+git-pull "$HOME/bin" 1
 separate pass
-git-pull "$NEXUS/pass" 2
+git-pull "$NEXUS/pass" 1
+separate notes/wiki
+git-pull "$HOME/wiki"
 # separate coin
 # git-pull "$HOME/src/coinmaster" 2
 # separate jrnl
