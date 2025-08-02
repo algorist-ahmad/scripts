@@ -14,7 +14,7 @@ git-pull "$HOME/bin" 1
 separate pass
 git-pull "$NEXUS/pass" 1
 separate notes/wiki
-git-pull "$HOME/wiki"
+git-pull "$HOME/wiki" 1
 # separate coin
 # git-pull "$HOME/src/coinmaster" 2
 # separate jrnl
