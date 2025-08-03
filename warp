@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# SSH into servers
+
+SERVER_ADDRESS="$(pass server/ssh)"
+
+ssh $SERVER_ADDRESS
