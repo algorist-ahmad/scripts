@@ -19,7 +19,7 @@ main() {
     # clear -x
     echo -e "Fetching repositories in parallel..."
     
-    process_repos
+    process_repos 2>/dev/null
     display_results
     clean_up
 }
