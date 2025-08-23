@@ -4,6 +4,11 @@
 
 API_DIR="$HOME/api"
 
+# Validation 1
 #TODO: handle missing dir
 
-echo $API_DIR/$@
+# Validation 2
+[[ -z "$@" ]] && >&2 echo "NEED SCRIPT NAME: api <script>" && exit 1
+
+# EXECUTE
+$API_DIR/$@ | vd
