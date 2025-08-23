@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Execute api calls
+
+API_DIR="$HOME/api"
+
+#TODO: handle missing dir
+
+echo $API_DIR/$@
