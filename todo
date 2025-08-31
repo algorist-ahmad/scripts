@@ -1,5 +1,0 @@
-#!/bin/bash
-
-WEB_URL="https://todo.thealgorist.dev"
-
-$BROWSER "$WEB_URL" &
