@@ -10,12 +10,6 @@ MARGIN="0 0"
 PADDING="0 0"
 #
 
-# credentials
-SSH_HOST=.warp.host
-SSH_USER=.warp.user
-SSH_PORT=.warp.port
-#
-
 # Dependency checks
 verify_dependencies() {
     local missing=()
@@ -33,21 +27,6 @@ verify_dependencies() {
         all_ok=false
     fi
 
-    # Check for age
-    if ! command -v age &> /dev/null; then
-        missing+=("age (https://github.com/FiloSottile/age)")
-        all_ok=false
-    fi
-
-    # Check for XDG_CONFIG_HOME
-    if [[ -z "$XDG_CONFIG_HOME" ]]; then
-        missing+=("XDG_CONFIG_HOME environment variable")
-        all_ok=false
-    elif [[ ! -d "$XDG_CONFIG_HOME" ]]; then
-        echo "ERROR: XDG_CONFIG_HOME directory ($XDG_CONFIG_HOME) does not exist" >&2
-        all_ok=false
-    fi
-
     # Visual feedback
     if $all_ok; then
         gum style --foreground 10 --border none --align left --margin "0 0" --padding "0 0" "✓ dependencies OK"
@@ -62,48 +41,17 @@ verify_dependencies() {
 
 # Configuration management
 load_config() {
-    local warp_dir="$XDG_CONFIG_HOME/warp"
-    local master_env_link="$warp_dir/master.env"
-    local master_key_link="$warp_dir/master.env.key"
-
-    # Create warp directory if needed
-    mkdir -p "$warp_dir"
-
-    # Set up master.env symlink
-    if [[ ! -e "$master_env_link" ]]; then
-        env_path=$(gum file --file --header "Select master.env.age file")
-        [[ -z "$env_path" ]] && { echo "No file selected. Exiting." >&2; exit 1; }
-        ln -sf "$(realpath "$env_path")" "$master_env_link"
-    fi
-
-    # Set up master.env.key symlink
-    if [[ ! -e "$master_key_link" ]]; then
-        key_path=$(gum file --file --header "Select decryption key")
-        [[ -z "$key_path" ]] && { echo "No key selected. Exiting." >&2; exit 1; }
-        ln -sf "$(realpath "$key_path")" "$master_key_link"
-    fi
-
-    # Resolve actual file paths
-    local encrypted_file=$(realpath "$master_env_link")
-    local key_file=$(realpath "$master_key_link")
-    local temp_env=$(mktemp)
-    trap "rm -f "$temp_env"" EXIT
-
-    # Decrypt configuration
-    if ! age --decrypt -i "$key_file" -o "$temp_env" "$encrypted_file" 2>/dev/null; then
-        echo "ERROR: Failed to decrypt configuration" >&2
-        exit 1
-    fi
+    local warp_file="$HOME/data/warp/credentials.yml"
 
     # Load configuration values
-    SSH_HOST=$(yq "$SSH_HOST" "$temp_env")
-    SSH_USER=$(yq "$SSH_USER" "$temp_env")
-    SSH_PORT=$(yq "$SSH_PORT" "$temp_env")
+    host=$(yq .host "$warp_file")
+    user=$(yq .user "$warp_file")
+    port=$(yq .port "$warp_file")
 
     # Validate configuration
-    if [[ $? -ne 0 ]] || [[ -z "$SSH_HOST" || -z "$SSH_USER" || -z "$SSH_PORT" ]]; then
-        echo "ERROR: Missing configuration values in master.env" >&2
-        echo "Required fields: .warp.host, .warp.user, .warp.port" >&2
+    if [[ $? -ne 0 ]] || [[ -z "$host" || -z "$user" || -z "$port" ]]; then
+        echo "ERROR: Missing configuration values" >&2
+        echo "Required fields: .host, .user, .port" >&2
         exit 1
     fi
 
@@ -119,12 +67,12 @@ main() {
     gum style --foreground 212 --border-foreground 212 --border double \
         --align center --width 30 --margin "0 0" --padding "0 0" \
         "CONFIGURATION LOADED" \
-        "$(gum join --horizontal "HOST: " "$(gum style --foreground 99 "$SSH_HOST")")" \
-        "$(gum join --horizontal "USER: " "$(gum style --foreground 99 "$SSH_USER")")" \
-        "$(gum join --horizontal "PORT: " "$(gum style --foreground 99 "$SSH_PORT")")"
+        "$(gum join --horizontal "HOST: " "$(gum style --foreground 99 "$host")")" \
+        "$(gum join --horizontal "USER: " "$(gum style --foreground 99 "$user")")" \
+        "$(gum join --horizontal "PORT: " "$(gum style --foreground 99 "$port")")"
 
     # Execute SSH connection
-    ssh -p $SSH_PORT $SSH_USER@$SSH_HOST
+    ssh -p $port $user@$host
 }
 
 main "$@"

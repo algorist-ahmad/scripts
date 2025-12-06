@@ -9,7 +9,7 @@ DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$id/bus
   --expire-time 4000 \
   --urgency normal \
   "STARTUP COMPLETE" \
-  "I am $HOME/bin/startup and I have been executed thanks to crontab @reboot $HOME/bin/startup.sh"
+  "I am $HOME/bin/cron/startup and I have been executed thanks to crontab @reboot $HOME/bin/startup.sh"
 
 sleep 0.1
 tput bel
