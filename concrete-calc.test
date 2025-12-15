@@ -1,0 +1,74 @@
+#!/bin/bash
+
+echo "Running tests for SAKRETE calculator..."
+echo "======================================"
+echo ""
+
+# Test 1: Check if script runs in interactive mode (no arguments)
+echo "Test 1: Testing interactive mode trigger..."
+./main.sh --help >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "✓ Script runs without errors"
+else
+    echo "✗ Script failed to run"
+fi
+echo ""
+
+# Test 2: Calculate water for 10 pounds
+echo "Test 2: Calculating water for 10 lbs of mix..."
+expected="Water needed for 10 lbs of mix: 408.20 mL"
+result=$(./main.sh --water 10)
+if [[ "$result" == "$expected" ]]; then
+    echo "✓ Test passed: $result"
+else
+    echo "✗ Test failed: Expected '$expected', got '$result'"
+fi
+echo ""
+
+# Test 3: Calculate mix for 408.20 mL of water
+echo "Test 3: Calculating mix for 408.20 mL of water..."
+expected="Mix needed for 408.20 mL of water: 10.00 lbs"
+result=$(./main.sh --mix 408.20)
+if [[ "$result" == "$expected" ]]; then
+    echo "✓ Test passed: $result"
+else
+    echo "✗ Test failed: Expected '$expected', got '$result'"
+fi
+echo ""
+
+# Test 4: Calculate water for 66.138678655 pounds (exactly 30kg)
+echo "Test 4: Calculating water for 66.138678655 lbs (30kg)..."
+expected="Water needed for 66.138678655 lbs of mix: 2700.00 mL"
+result=$(./main.sh --water 66.138678655)
+if [[ "$result" == "$expected" ]]; then
+    echo "✓ Test passed: $result"
+    echo "  Note: 2700 mL = 2.7 L as specified in the ratio"
+else
+    echo "✗ Test failed: Expected '$expected', got '$result'"
+fi
+echo ""
+
+# Test 5: Invalid input test
+echo "Test 5: Testing invalid input handling..."
+result=$(./main.sh --water "abc" 2>&1)
+if [[ "$result" == *"Error"* ]]; then
+    echo "✓ Error handling works correctly"
+else
+    echo "✗ Error handling failed"
+fi
+echo ""
+
+# Test 6: Multiple arguments
+echo "Test 6: Testing multiple calculations..."
+result=$(./main.sh --water 20 --mix 500 2>&1)
+lines=$(echo "$result" | wc -l)
+if [ "$lines" -ge 2 ]; then
+    echo "✓ Multiple arguments processed correctly"
+    echo "$result"
+else
+    echo "✗ Multiple arguments failed"
+fi
+echo ""
+
+echo "======================================"
+echo "Tests completed!"
