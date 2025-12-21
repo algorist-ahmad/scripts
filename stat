@@ -33,7 +33,7 @@ process_repos() {
         
         key=$(tr -d '[:space:]' <<< "$key")
         value=$(tr -d '[:space:]' <<< "$value")
-        path="${HOME}${value}"
+        path="${value}"
         
         # Store repo info with index
         declare -gA repos["$index"]="$key:$path"
@@ -87,3 +87,5 @@ clean_up() {
 
 trap 'clean_up; exit 1' INT TERM
 main "$@"
+
+echo "REPLACE WITH LAZYGIT OR CRONTAB"
