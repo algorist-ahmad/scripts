@@ -3,7 +3,6 @@
 # Send an email using Charmbracelet's POP
 # Config store in /etc/smtp/{host,user,pass,from}
 
-set -x
 set -e
 
 time=$(TZ=America/Toronto date)
