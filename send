@@ -1,13 +1,40 @@
 #!/bin/bash
 
-echo -n "arch: "
-arch -g push
-echo -n "bill: "
-bill sync
-#bin sync
-#j sync
-echo -n "pass: "
-pass git push
-#rc-files sync
-echo -n "task: "
-tk sync
+# Send an email using Charmbracelet's POP
+# Config store in /etc/smtp/{host,user,pass,from}
+
+set -x
+set -e
+
+time=$(TZ=America/Toronto date)
+
+command -v pop > /dev/null || { echo "POP NOT FOUND: install with go install github.com/charmbracelet/pop@latest" >&2; exit 1; }
+[[ -n "$to" ]] || { echo "send: 'to' is required"      >&2; exit 1; }
+[[ -n "$1"  ]] || { echo "send: message body required" >&2; exit 1; }
+[[ -n "$sub" ]] || sub="Message from $HOSTNAME, $USER ($(uname -sr)) on $time"
+
+POP_SMTP_HOST=$(cat /etc/smtp/host) \
+POP_SMTP_PORT=587 \
+POP_SMTP_USERNAME=$(cat /etc/smtp/user) \
+POP_SMTP_PASSWORD=$(cat /etc/smtp/pass) \
+/bin/pop \
+-f "$(cat /etc/smtp/from)" \
+-t "$to" \
+-s "$sub" \
+-b "$*" \
+>> /tmp/send.log
+
+# Usage:
+#  pop [flags]
+#  pop [command]
+
+#Flags:
+#  -a, --attach strings           Email's attachments
+#      --bcc strings              BCC recipients
+#  -b, --body string              Email's contents
+#      --cc strings               CC recipients
+#  -h, --help                     help for pop
+#  -x, --signature string         Signature to display at the end of the email. ($POP_SIGNATURE)
+#  -e, --smtp.encryption string   Encryption type of the SMTP server (starttls, ssl, or none) ($POP_SMTP_ENCRYPTION)
+#  -s, --subject string           Email's subject
+#  -t, --to strings               Recipients
