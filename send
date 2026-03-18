@@ -8,7 +8,7 @@ set -e
 time=$(TZ=America/Toronto date)
 
 command -v pop > /dev/null || { echo "POP NOT FOUND: install with go install github.com/charmbracelet/pop@latest" >&2; exit 1; }
-[[ -n "$to" ]] || { echo "send: 'to' is required"      >&2; exit 1; }
+[[ -n "$to" ]] || { echo "send: 'to' is required: to=RECIPIENT send MESSAGE"      >&2; exit 1; }
 [[ -n "$1"  ]] || { echo "send: message body required" >&2; exit 1; }
 [[ -n "$sub" ]] || sub="Message from $HOSTNAME, $USER ($(uname -sr)) on $time"
 
