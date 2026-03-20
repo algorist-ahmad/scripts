@@ -1,5 +1,12 @@
 #!/bin/bash
 
+## ISSUES
+
+# Combine all config files in one unified config file: .smtp
+# Replace /etc/smtp/ with /etc/smtp.config
+# Check $HOME/.smtp as well in case ser has no sudo privileges
+# Look for /bin/pop OR $HOME/bin/pop
+
 # Send an email using Charmbracelet's POP
 # Config store in /etc/smtp/{host,user,pass,from}
 
