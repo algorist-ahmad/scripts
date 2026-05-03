@@ -13,6 +13,7 @@
 
 # =======================================
 
+set -euo pipefail
 
 BW_SESSION=$(cat /data/bw/session) \
 bw --pretty $@
